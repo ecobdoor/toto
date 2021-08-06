@@ -1,5 +1,5 @@
 #ifndef __000_EEPROM__
-.#define __000_EEPROM__
+#define __000_EEPROM__
 /** @file */
 #include "EEPROM.h"
 //#include "000_UTL_SYS_BASIC.h"
