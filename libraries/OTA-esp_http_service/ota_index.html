@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>ESP32 OTA SERVICES</title>
+	<meta name='viewport' content='width=device-width, initial-scale=1' />
+	<!--
+	<script src="jquery-3.4.1.min.js"></script>
+-->
+</head>
+
+<body onload="OTA_reset()">
+	<h4 id="latest_firmware"></h4>
+	<table class="fixed" border="1">
+		<col width="750px" />
+		<col width="750px" />
+		<tr>
+			<td>
+				<h3>Update application file</h3>
+				<h4 id="ota_status"></h4>
+			</td>
+			<td>
+				<input type="file" id="selectedProgFile" accept=".bin" style="display: none;"
+					onchange="OTA_chooseBin()" />
+				<input type="button" value="Browse app..."
+					onclick="document.getElementById('selectedProgFile').click();" />
+				<h3 id="prog_info"></h3>
+				<input type='submit' id="update_button" value='Update Firmware' onclick="OTA_updateFirmware()">
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table border="1">
+					<tr>
+						<td><label for="newfileFFS">Choose local file</label></td>
+						<td colspan="2"><input id="newfileFFS" type="file" onchange="setpath(id,'srvPathFFS')"
+								style="width:100%;"></td>
+					</tr>
+					<tr>
+						<td><label for="srvPathFFS">FFS server path</label></td>
+						<td><input id="srvPathFFS" type="text" style="width:100%;"></td>
+						<td><button id="uploadFFS" type="button"
+								onclick="upload('/FFS/','srvPathFFS','newfileFFS',id,'progressFFS')">Upload</button>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<div id="progressFFS"> </div>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td>
+				<table border="1">
+					<tr>
+						<td><label for="newfileSSD">Choose local file</label></td>
+						<td colspan="2"><input id="newfileSSD" type="file" onchange="setpath(id,'srvPathSSD')"
+								style="width:100%;"></td>
+					</tr>
+					<tr>
+						<td><label for="srvPathSSD">SSD server path</label></td>
+						<td><input id="srvPathSSD" type="text" style="width:100%;"></td>
+						<td><button id="uploadSSD" type="button"
+								onclick="upload('/SSD/','srvPathSSD','newfileSSD',id,'progressSSD')">Upload</button>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<div id="progressSSD"> </div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<!--
+			<td style="vertical-align:top;">
+				<h2>Download remote file</h2>
+			</td>
+			-->
+			<td style="vertical-align:top;">
+				dir list FFS
+				<div id="FFS"></div>
+			</td>
+			<td style="vertical-align:top;">
+				dir list SSD
+				<div id="SSD"></div>
+			</td>
+		</tr>
+	</table>
+
+	<script type="text/javascript">
+		var FFS_free = 0;
+		var SSD_free = 0;
+		///////////////////////////////////////////////////////////////
+		function locationReload() {
+			//	location.reload(true)
+		}
+		///////////////////////////////////////////////////////////////
+		function setpath(newfileID, srvPathID) {
+			var default_path = document.getElementById(newfileID).files[0].name;
+			document.getElementById(srvPathID).value = default_path;
+		}
+		///////////////////////////////////////////////////////////////
+		function uploadPromise(URI, FILE, PROGRESS, STATE) {
+			return new Promise((resolve, reject) => {
+				const xhr = new XMLHttpRequest();
+				var formData = new FormData();
+				formData.set("file", FILE, FILE.name);
+				xhr.onreadystatechange = function () {
+					STATE.readyState = xhr.readyState;
+					STATE.status = xhr.status;
+					STATE.statusText = xhr.statusText;
+					console.log(xhr);
+					console.log(xhr.response);
+					console.log(STATE);
+				};
+				xhr.onloadend = () => {
+					const blob = xhr.response;
+					resolve(blob);
+				};
+				xhr.onerror = (err) => {
+					console.log("ERR ",err);
+					/*
+					const blob = xhr.response;
+					resolve(blob);
+					*/
+				};
+				console.log("SENDING ", URI);
+				xhr.open("POST", URI, true);
+				/*
+				xhr.responseType = "blob";
+				xhr.send(formData);
+				*/
+				xhr.send(FILE);
+			});
+		}
+
+
+		function upload(VOL, srvPathID, newfileID, uploadID, progressID) {
+			var fileInput = document.getElementById(newfileID).files;
+			if (fileInput.length == 0) {
+				alert("No file selected!");
+				return;
+			}
+			var file = fileInput[0];
+			var filePath = document.getElementById(srvPathID).value;
+			var upload_path = "/ota_upload" + VOL + filePath;
+			var State = new Object();
+			var newResult = uploadPromise(upload_path, file, progressID, State)
+				.then(function (result) {
+					var chn = '???';
+					if (result instanceof Blob) {
+						result.arrayBuffer().then((buffer) => {
+							chn = "blob: " + String.fromCharCode.apply(null, new Uint8Array(buffer));
+						});
+					} else chn = "text: " + result;
+					chn = State.readyState + ", " + State.status + "(" + State.statusText + ")\n\n" + chn;
+					console.log(chn);
+					alert(chn);
+				});
+			/*
+				.catch(function (err) {
+					console.log(err);
+					console.log(err.text());
+					reject('error in request');
+				});
+			*/
+		}
+		///////////////////////////////////////////////////////////////
+		function Disable(STATE, idArray) {
+			for (i = 0; i < idArray.length; i++) {
+				document.getElementById(idArray[i]).disabled = STATE;
+			}
+		}
+		function upload_bof(VOL, srvPathID, newfileID, uploadID, progressID) {
+			var filePath = document.getElementById(srvPathID).value;
+			var upload_path = "/ota_upload" + VOL + filePath;
+			var fileInput = document.getElementById(newfileID).files;
+
+			if (fileInput.length == 0) {
+				alert("No file selected!");
+				/*
+				} else if (filePath.length == 0) {
+					alert("File path on server is not set!");
+				} else if (filePath.indexOf(' ') >= 0) {
+					alert("File path on server cannot have spaces!");
+				} else if (filePath[filePath.length - 1] == '/') {
+					alert("File name not specified after path!");
+				} else if ((VOL == '/FFS/') && (fileInput[0].size > FFS_free)) {
+					alert("File size is " + fileInput[0].size + ", only " + FFS_free + " bytes free!");
+				} else if ((VOL == '/SSD/') && (fileInput[0].size > SSD_free)) {
+					alert("File size is " + fileInput[0].size + ", only " + SSD_free + " bytes free!");
+				*/
+			} else {
+				Disable(true, [newfileID, srvPathID, uploadID]);
+				var formData = new FormData();
+
+				var file = fileInput[0];
+				formData.set("file", file, file.name);
+				var xhr = new XMLHttpRequest();
+				//Upload progress
+				xhr.upload.addEventListener("progress", function (evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = (evt.loaded / evt.total) * 100;
+						var x = Math.floor(percentComplete);
+						console.log("Progress:" + x + "%.");
+						document.getElementById(progressID).innerHTML = "Progress:" + x + "%.";
+						/*
+						// After we send it all, lets ask the board if it went well. 
+						if (x == 100) {
+							// Lets ask the board for the upload result 
+							OTA_getstatus();
+						}
+						*/
+					} else {
+						window.alert('total size is unknown')
+					}
+				}, false);
+				xhr.onloadend = function () {
+					console.log("onloadend:", xhr.response);
+					alert("onloadend: " + xhr.response);
+					Disable(false, [newfileID, srvPathID, uploadID]);
+				};
+				xhr.onload = function () {
+					console.log("onload:", xhr.response);
+					alert("onload: " + xhr.response);
+				};
+				xhr.onerror = function () { // only triggers if the request couldn't be made at all
+					console.log("onerror:", xhr.response);
+					alert("onerror: " + xhr.response);
+				};
+				/*
+				xhr.onreadystatechange = function () {
+					console.log(xhr);
+					console.log(xhr.response);
+					if (xhr.readyState == 4) {
+						if (xhr.status == 200) {
+							document.open();
+							document.write(xhr.responseText);
+							document.close();
+						} else if (xhr.status == 0) {
+							alert("Server closed the connection abruptly!");
+							locationReload()
+						} else {
+							alert(xhr.status + " Error: " + xhr.responseText);
+							locationReload()
+						}
+					}
+				};
+				*/
+				console.log("SENDING ", upload_path);
+				xhr.open("POST", upload_path, true);
+				/*
+				xhr.responseType = "blob";
+				xhr.send(formData);
+				*/
+				xhr.send(file);
+			}
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_dirList(IDT, VOLPATH) {
+			fetch(document.location.origin + `/ota_dirList` + VOLPATH)
+				.then(function (response) {
+					console.log(response);
+					return response.json()
+				})
+				.then(function (state) {
+					document.getElementById(IDT).innerHTML = state.dirList;
+				})
+		}
+		///////////////////////////////////////////////////////////////
+		function handleErrors(DATA, STATE) {
+			console.log(DATA);
+			console.log(STATE);
+			if (!STATE.ok) {
+				throw Error(STATE.status + "(" + STATE.text + ")\n\n" + DATA);
+			}
+			return DATA;
+		}
+		///////////////////////////////////////////////////////////////
+		function DATA(RESPONSE, STATE) {
+			console.log(RESPONSE);
+			STATE.ok = RESPONSE.ok;
+			STATE.status = RESPONSE.status;
+			STATE.text = RESPONSE.statusText;
+			console.log(STATE);
+			if (!RESPONSE.headers.get('Content-Type') == "application/json")
+				return RESPONSE.json();
+			return RESPONSE.text();
+		}
+		///////////////////////////////////////////////////////////////
+		function BLOB(RESPONSE, STATE) {
+			console.log(RESPONSE);
+			STATE.ok = RESPONSE.ok;
+			STATE.status = RESPONSE.status;
+			STATE.text = RESPONSE.statusText;
+			console.log(STATE);
+			if (RESPONSE.ok)
+				return RESPONSE.blob();
+			return RESPONSE.text();
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_delete(VOLPATH) {
+			var State = new Object();
+			if (window.confirm("Supprimer \"" + VOLPATH + "\"?")) {
+				fetch(document.location.origin + `/ota_delete` + VOLPATH)
+					.then(function (response) {
+						return DATA(response, State)
+					})
+					.then(function (data) {
+						handleErrors(VOLPATH + data, State);
+						locationReload()
+					})
+					.catch(function (error) {
+						console.log(error);
+						alert(error);
+					})
+			}
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_download(VOLPATH) {
+			var link = document.createElement("a");
+			link.download = VOLPATH;
+			link.href = document.location.origin + `/ota_download` + VOLPATH;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			delete link;
+			return;
+		}
+		///////////////////////////////////////////////////////////////
+		var OTA_seconds = 10;
+		var OTA_theTimer;
+		///////////////////////////////////////////////////////////////
+		function OTA_chooseBin() {
+			var x = document.getElementById("selectedProgFile");
+			var file = x.files[0];
+			document.getElementById("prog_info").innerHTML = "<h4>File: " + file.name + "<br>" + "Size: " + file.size + " bytes</h4>";
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_updateFirmware() {
+			var formData = new FormData();
+			var fileSelect = document.getElementById("selectedProgFile");
+			if (fileSelect.files && fileSelect.files.length == 1) {
+				var file = fileSelect.files[0];
+				formData.set("file", file, file.name);
+				var xhr = new XMLHttpRequest();
+				xhr.upload.addEventListener("progress", function (evt) {
+					if (evt.lengthComputable) {
+						var percentComplete = (evt.loaded / evt.total) * 100;
+						var x = Math.floor(percentComplete);
+						document.getElementById("ota_status").innerHTML = "Progress:" + x + "%.";
+						if (x == 100) {
+							// Lets ask the board for the upload result 
+							OTA_getstatus();
+						}
+					} else {
+						window.alert('total size is unknown')
+					}
+				}, false);
+				xhr.open('POST', "/ota_update");
+				xhr.responseType = "blob";
+				xhr.send(formData);
+			} else {
+				window.alert('Select A File First')
+			}
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_getstatus() {
+
+			var xhr = new XMLHttpRequest();
+			var requestURL = "/ota_status";
+			xhr.open('POST', requestURL, true);
+
+			//Send the proper header information along with the request
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+			xhr.onreadystatechange = function () { // Call a function when the state changes.
+				if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+					var response = JSON.parse(xhr.responseText);
+					FFS_free = response.ffs_free;
+					SSD_free = response.ssd_free;
+
+					document.getElementById("latest_firmware").innerHTML = "Latest " + response.bin_file + ": " + response.bin_date + " - " + response.bin_time
+					// If flashing was complete it will return a 1, else -1
+					// A return of 0 is just for information on the Latest Firmware request
+					if (response.status == 1) {
+						// Start the countdown timer
+						console.log("Status Request Returned ok");
+
+						// Set the delay time in seconds 
+						OTA_seconds = 10;
+
+						// Start the countdown timer
+						console.log("starting the timer");
+
+						// Since ESP32 reported ok, lets set a tier to reload this web page 
+						// Lets give it 10 seconds to reboot and re-connect to the router. 
+						OTA_theTimer = setInterval(function () {
+							OTA_startMyTimer();
+						}, 1000);
+
+					} else if (response.status == -1) {
+						document.getElementById("ota_status").innerHTML = "!!! Update Error !!!";
+					}
+				}
+			}
+			console.log("Requesting Upgrade Status");
+			xhr.send('status');
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_startMyTimer() {
+			console.log("timer" + OTA_seconds);
+
+			if (--OTA_seconds == 0) {
+				clearInterval(OTA_theTimer);
+				locationReload();
+			} else {
+				document.getElementById("ota_status").innerHTML = "Upgrade Complete, Rebooting in " + OTA_seconds + " Seconds.";
+			}
+		}
+		///////////////////////////////////////////////////////////////
+		function OTA_reset() {
+			OTA_getstatus();
+			OTA_dirList('FFS', '/FFS/');
+			OTA_dirList('SSD', '/SSD/');
+		}
+	</script>
+</body>
+
+</html>
