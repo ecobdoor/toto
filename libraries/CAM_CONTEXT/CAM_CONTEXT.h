@@ -1,8 +1,9 @@
 /** @file */
 #ifndef __CAM_CONTEXT__
 #define __CAM_CONTEXT__
-#include "000_EEPROM.h"
 #include "esp_camera.h"
+
+#include "../esp32_EEPROM/esp32_EEPROM.h"
 ///////////////////////////////////////////////////////////////////////
 
 #define DEF_MOTION_GRIDLEN 12288 // 1024x768/4²=49152, 800x600/4²=30000, 640*480/4²=19200, 640*480/4²=12288

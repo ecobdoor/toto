@@ -106,7 +106,7 @@ public:
 		uint16_t cnt = 0;
 		char buffer[256];
 		cnt += sprintf(&buffer[cnt], "%s", COMMENT ? COMMENT : "");
-		cnt += sprintf(&buffer[cnt], " 565:h_%04x ║%3i║ "H565_PAT""B565_PAT"",pix,norm(), H565(pix), BIN16(pix));
+		cnt += sprintf(&buffer[cnt], " 565:h_%04x ║%3i║ " H565_PAT "" B565_PAT "",pix,norm(), H565(pix), BIN16(pix));
 		cnt += sprintf(&buffer[cnt], "%s", BUFFER ? (buf_Info(BUFFER, BUFLEN).c_str()) : "");
 		return String(buffer);
 	}

@@ -131,9 +131,7 @@ void printSysState(){
 	Serial.printf("\nMAX  | %8.6f  |%8.3f |", MaxAllocPsram / 1000000.0, MaxAllocHeap / 1000.0);
 }
 //---------------------------------------------------------------------
-uint64_t IRAM_ATTR micro_TS(){
-	return (uint64_t)(esp_timer_get_time()); // (uint64_t)µicroseconds();
-}
+//uint64_t IRAM_ATTR micro_TS(){	return (uint64_t)(esp_timer_get_time()); // (uint64_t)µicroseconds();}
 //---------------------------------------------------------------------
 /**
  * @fn String datim(uint64_t TMS, const int SHIFTHOURS = 1)

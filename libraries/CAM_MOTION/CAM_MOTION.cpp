@@ -33,15 +33,15 @@ bool c_Motion::Begin(){ // At this moment the context is  initialized !!!!
 //---------------------------------------------------------------------
 template<typename PIXL>
 void legend(c_Image<PIXL> &IMG, c_gTerminal<PIXL> &gtxt){
-	IMG.fillRectangle(4, 20, 50, 100, PIXL(0xffffff));
+	IMG.fillRectangle(uint16_t{4}, uint16_t{20}, uint16_t{50}, uint16_t{100}, PIXL(0xff, 0xff, 0xff));
 	for (size_t i = 0; i < 6; i++) {
 		gtxt.setTo(5, 25 + 15 * i, IMG.palette(i));
 		gtxt.gprintf("\e");
 		gtxt.setTo(20, 25 + 15 * i);
 		gtxt.gprintf("%i", i);
 	}
-	IMG.drawCircle(200, 200, 150, PIXL(0xffffff));
-	IMG.drawCircle(200, 200, 140, PIXL(0xffffff), -PI / 4, -3 * PI / 4);
+	IMG.drawCircle(200, 200, 150, PIXL(0xff, 0xff, 0xff));
+	IMG.drawCircle(200, 200, 140, PIXL(255,255,255), -PI / 4, -3 * PI / 4);
 }
 //---------------------------------------------------------------------
 template<typename PIXL>
@@ -92,7 +92,7 @@ void run(camera_fb_t *FRAME, uint16_t &changes, float &ratio, const char *COMMEN
 			);
 	_DEBUG_Motion_(0, "\n%s", buffer);
 	if (motionCtx.dbgLevel() > 2) {
-		gtxt.setTo(5, 5, PIXL(0xffffff), true);
+		gtxt.setTo(5, 5, PIXL(0xff, 0xff, 0xff), true);
 		gtxt.gprintf("%s", buffer);
 	}
 	if (motionCtx.dbgLevel() > 3)

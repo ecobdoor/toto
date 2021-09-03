@@ -80,7 +80,7 @@ public:
 		uint16_t cnt=0;
 		char buffer[256];
 		cnt+=sprintf(&buffer[cnt],"%s",COMMENT?COMMENT:"");
-		cnt+=sprintf(&buffer[cnt]," 888:h_%02x%02x%02x ║%3i║ "H888_PAT""B888_PAT"",
+		cnt+=sprintf(&buffer[cnt]," 888:h_%02x%02x%02x ║%3i║ " H888_PAT "" B888_PAT "",
 			pix[2],pix[1],pix[0],norm(),pix[2],pix[1],pix[0],BIN8(pix[2]),BIN8(pix[1]),BIN8(pix[0]));
 		cnt+=sprintf(&buffer[cnt],"%s",BUFFER?(buf_Info(BUFFER, BUFLEN).c_str()):"");
 		return String(buffer);

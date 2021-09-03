@@ -6,25 +6,61 @@
 bool ffsON = false;
 bool ssdON = false;
 ///////////////////////////////////////////////////////////////////////
+void testSplit(){
+	uint16_t nth;
+	const char *CHN;
+	const char *patterns;
+	std::string S1, S2;
+
+	CHN = "/111/222/333/444";
+	patterns = "/\\";
+	nth = 3;
+	if (split_Up_Before(nth, CHN, S1, S2, patterns))
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>S1='%s' S2='%s'.",
+			nth, CHN, patterns, S1.c_str(), S2.c_str());
+	else
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>ERROR.", nth, CHN, patterns);
+
+	patterns = "2";
+	nth = 2;
+	if (split_Up_Before(nth, CHN, S1, S2, patterns))
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>S1='%s' S2='%s'.",
+			nth, CHN, patterns, S1.c_str(), S2.c_str());
+	else
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>ERROR.", nth, CHN, patterns);
+
+	nth = 4;
+	if (split_Up_Before(nth, CHN, S1, S2, patterns))
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>S1='%s' S2='%s'.",
+			nth, CHN, patterns, S1.c_str(), S2.c_str());
+	else
+		_DEBUG_Others_(3, "\nsplit_Up_Before(%i,%s,S1,S2,%s)=>ERROR.", nth, CHN, patterns);
+
+}
 //---------------------------------------------------------------------
 bool SETUP_FILSYS(){
+	testSplit();
+
+	char *bufDIR = new char[10000]; // On the heap !!!
+	char *buffer;
 	if (!SPIFFS.begin(false, "/FFS")) {
 		Serial.print("\nNo SPIFFS !!!");
+		delete[] bufDIR; // don't forget to free after finished using it
 		return false;
 	}
 	ffsON = true;
 	Serial.printf("\nSPIFFS started");
 	Serial.printf("\n==========================");
-	listDirSPI("/", 2);
-	Serial.printf("\n==========================");
-	listDirSPI("/titi/tutu", 3);
-	Serial.printf("\n==========================");
+	buffer = bufDIR; // !!! Before listDir
+	listDir("TEXT", &buffer, "/FFS");
+	Serial.printf("\n==========================\n%s", bufDIR);
 	readFile(SPIFFS, "/ca_cert.pem");
-	return true;
+//	return true;
 
-	if (!SD_MMC.begin("/sdcard", false)) {
+	if (!SD_MMC.begin("/SSD", false)) {
 		//if (!SD_MMC.begin("/sdcard", false, true)) { // FORMAT ????
 		Serial.print("\nNo SD_MMC !!!");
+		delete[] bufDIR; // don't forget to free after finished using it
 		return false;
 	}
 	ssdON = true;
@@ -33,107 +69,223 @@ bool SETUP_FILSYS(){
 	Serial.printf("\n\tcardSize   %10.3f Mo", SD_MMC.cardSize() / 1000000.0);
 	Serial.printf("\n\ttotalBytes %10.3f Mo", SD_MMC.totalBytes() / 1000000.0);
 	Serial.printf("\n\tusedBytes  %10.3f Mo", SD_MMC.usedBytes() / 1000000.0);
-	Serial.printf("\n--------------------------");
-	listDirSDC("/");
-	Serial.printf("\n--------------------------");
-	listDirSDC("/", 1);
-	Serial.printf("\n--------------------------");
-	listDirSDC("/toto", 2);
-	Serial.printf("\n--------------------------");
+	buffer = bufDIR; // !!! Before listDir
+	listDir("TEXT", &buffer, "/SSD");
+	Serial.printf("\n==========================\n%s", bufDIR);
 	readFile(SD_MMC, "/ca_cert.pem");
+	delete[] bufDIR; // don't forget to free after finished using it
 	return true;
 }
-/*
- https://github.com/espressif/arduino-esp32/tree/master/libraries/SPIFFS
- */
-void SplitOnLast(const std::string str, std::string &first, std::string &second,
+//---------------------------------------------------------------------
+bool splitAfterLast(const std::string str, std::string &first, std::string &second,
 	const char *charPatterns){
 	std::size_t found = str.find_last_of(charPatterns);
+	if (found == std::string::npos)
+		return false;
 	first = str.substr(0, found + 1);
 	second = str.substr(found + 1);
+	return true;
 }
 //---------------------------------------------------------------------
-void dirHTML(char **buffer, fs::FS &fs,
-	const char *volName, const char *dirname, const uint8_t depth, const bool init,
-	const uint64_t totalBytes = 0, const uint64_t usedBytes = 0){
-	if (!depth)
-		return;
-	typedef struct {
-		std::string _path;
-		std::string _name;
-		uint32_t _size;
-		int _level;
-		std::string _ext;
-	} pa2img_t;
-	static std::vector<pa2img_t> infos;
-	if (init) {
-		infos.clear();
-	}
-	Serial.printf("\n==== init(%s) cnt_fil %3i, depth %3i, path '%s'",
-		(init) ? "YES" : "NO ", infos.size(), depth, dirname);
-	File root = fs.open(dirname);
-	if (!root) {
-		*buffer += sprintf(*buffer, "Failed to open directory '%s'\\n", dirname);
-		return;
-	}
-	File file = root.openNextFile();
-	while (file) {
-		Serial.printf("\n file '%s' '%s'", file.path(), file.name());
-		if (file.isDirectory()) {
-			if (depth) {
-				dirHTML(buffer, fs, volName, file.path(), depth - 1, false);
-			}
-		} else {
-//			SPrintF(sizeof(buffer), cnt, buffer, "%3i %7i\t%s\n", cnt_fil, file.size(),file.name());
-			pa2img_t record;
-			SplitOnLast(file.path(), record._path, record._name, "/\\");
-			// string s=file.name();
-			record._level = count(record._path.begin(), record._path.end(), '/');
-			record._size = file.size();
-			infos.push_back(record);
-			Serial.printf("\n%03i) level %-3i, path '%s', name '%s', size '%-6i'", infos.size(),
-				record._level, record._path.c_str(), record._name.c_str(), record._size);
-		}
-		file = root.openNextFile();
-	}
-	if (init) {
-		std::sort(infos.begin(), infos.end(),
-			[](pa2img_t const &a, pa2img_t const &b) -> bool{
-				String A = String(a._path.c_str()) + "/" + String(a._name.c_str());
-				String B = String(b._path.c_str()) + "/" + String(b._name.c_str());
-//			return (a.record._level < b.record._level)&&()&&();
-				return (A < B);
-			});
-		*buffer += sprintf(*buffer, "Directory '%s' (%7llu Bytes free)</br>\\n",
-			dirname, totalBytes - usedBytes);
+size_t split_Up(const uint16_t nth, const std::string &str, const char *charPatterns){
+	size_t found;
+	size_t previous = 0;
+	uint16_t i = 0;
+	do {
+		found = str.find_first_of(charPatterns, previous);
+		if (found == std::string::npos)
+			break;
+		previous = 1 + found;
+		i++;
+	} while (i < nth);
+	return found;
+}
+//---------------------------------------------------------------------
+bool split_Up_Before(const uint16_t nth, const char *chn,
+	std::string &first, std::string &second, const char *charPatterns){
+	std::string str = std::string(chn);
+	size_t found = split_Up(nth, str, charPatterns);
+	if (found == std::string::npos)
+		return false;
+	first = str.substr(0, found);
+	second = str.substr(found);
+	return true;
+}
+//---------------------------------------------------------------------
+bool splitAfterFirst(const std::string str, std::string &first, std::string &second,
+	const char *charPatterns){
+	std::size_t found = str.find_first_of(charPatterns);
+	if (found == std::string::npos)
+		return false;
+	first = str.substr(0, found + 1);
+	second = str.substr(found + 1);
+	return true;
+}
+//---------------------------------------------------------------------
+bool splitBeforeLast(const std::string str, std::string &first, std::string &second,
+	const char *charPatterns){
+	std::size_t found = str.find_last_of(charPatterns);
+	if (found == std::string::npos)
+		return false;
+	first = str.substr(0, found);
+	second = str.substr(found);
+	return true;
+}
+//---------------------------------------------------------------------
+#define DEF_VOLEN 4
+fs::FS* volFS(const char *volpath){
+	String volName = String(volpath).substring(0, DEF_VOLEN);
+	_DEBUG_Others_(3, "\nvstr='%s'", volName.c_str());
+	if (String("/FFS") == volName)
+		return &SPIFFS;
+	if (String("/SSD") == volName)
+		return &SD_MMC;
+	return nullptr;
+}
+//---------------------------------------------------------------------
+typedef struct {
+	std::string _path;
+	std::string _name;
+	uint32_t _size;
+	int _level;
+	std::string _ext;
+} pa2img_t;
+void dirTEXT(const char *format, char **buffer, const char *header,
+	const char *volName, const char *dirname, std::vector<pa2img_t> &infos){
+	//Serial.printf("\n*****dirTEXT buffer %p *buffer %p ", buffer, *buffer);
+	//Serial.printf("\n*****dirTEXT buffer %p *buffer %p '%s'", buffer, *buffer, *buffer);
+	std::sort(infos.begin(), infos.end(),
+		[](pa2img_t const &a, pa2img_t const &b) -> bool{ // Needs first printable char separator (space is excluded from names!)
+			String A = String(a._path.c_str()) + " " + String(a._name.c_str());
+			String B = String(b._path.c_str()) + " " + String(b._name.c_str());
+			return (A < B);
+		});
+	std::string prevPath = "";
+	if (0 == strcmp("HTML", format)) { // Don't underline the a links
+		*buffer += sprintf(*buffer, "<style type='text/css'>a {text-decoration: none;}</style>");
+		*buffer += sprintf(*buffer, "%s</br>\\n", header);
 		*buffer +=
 			sprintf(*buffer,
-				"<table border=1> <tr><th>N°</th><th>Size</th><th>lvl</th><th>Folder</th><th>File</th></tr>\\n");
+				"<table cellspacing='0'><tr bgcolor='#cccccc'><th>N°</th><th>Lvl</th><th>Size</th><th>Folder -> file</th><th></th></tr>\\n");
+		const char *color[2] = { "#ccffcc", "#ccccff" };
 		for (size_t i = 0; i < infos.size(); i++) {
+			if (prevPath != infos[i]._path) {
+				*buffer +=
+					sprintf(*buffer,
+						"<tr bgcolor='#ffcccc'>\\n<td align ='right'>--</td><td align ='right'>%i</td><td align ='right'>dir:</td>\\n",
+						infos[i]._level);
+				*buffer +=
+					sprintf(*buffer,
+						"<td><a title='list dir' href='#' onClick=\\\"OTA_dirList('%s','%s%s');\\\"><b>%s</b></a></td>\\n",
+						volName, volName, infos[i]._path.c_str(), infos[i]._path.c_str());
+				*buffer += sprintf(*buffer, "<td></td>\\n</tr>\\n");
+				prevPath = infos[i]._path;
+			}
+			*buffer +=
+				sprintf(*buffer,
+					"<tr bgcolor='%s'>\\n<td align ='right'>%i</td><td align ='right'>%i</td><td align ='right'>%i</td>\\n",
+					color[i % 2], i, infos[i]._level, infos[i]._size);
 			std::string space = "";
-			for (size_t j = 0; j < infos[i]._level; j++)
+			for (size_t j = 0; j < infos[i]._level + 1; j++)
 				space += "&nbsp;&nbsp;&nbsp;";
+			if (((i + 1) == infos.size()) || (infos[i]._path != infos[i + 1]._path))
+				space += "&#9492;"; //└
+			else
+				space += "&#9500;"; //├
 			*buffer +=
 				sprintf(*buffer,
-					"<tr><td>%3i</td><td align ='right'>%7i</td><td>%3i</td><td>%s</td>\\n",
-					i, infos[i]._size, infos[i]._level, infos[i]._path.c_str());
-			*buffer +=
-				sprintf(*buffer,
-					"<td>%s<a href='#' onClick=\\\"OTA_download('%s%s%s');\\\">%s</a></td>\\n",
+					"<td>%s<a title='download' href='#' onClick=\\\"OTA_download('%s%s%s');\\\">%s</a></td>\\n",
 					space.c_str(), volName, infos[i]._path.c_str(), infos[i]._name.c_str(),
 					infos[i]._name.c_str());
 			*buffer +=
 				sprintf(*buffer,
-					"<td><a href='#' onClick=\\\"OTA_delete('%s%s%s');\\\">X</a></td></tr>\\n",
+					"<td><a title='delete' href='#' onClick=\\\"OTA_delete('%s%s%s');\\\">&#10060;</a></td>\\n</tr>\\n",
 					volName, infos[i]._path.c_str(), infos[i]._name.c_str());
 		}
 		*buffer += sprintf(*buffer, "</table>\\n");
+	} else if (0 == strcmp("TEXT", format)) {
+		*buffer += sprintf(*buffer, "\n%s", header);
+		*buffer += sprintf(*buffer, "\n N° Lvl    Size Folder               File name");
+		for (size_t i = 0; i < infos.size(); i++) {
+			if (prevPath != infos[i]._path) {
+				*buffer += sprintf(*buffer, "\n %-3s%3i %-10s %-*s",
+					"--", infos[i]._level, "dir:", 20, infos[i]._path.c_str());
+				prevPath = infos[i]._path;
+			}
+			std::string space = " ";// Doesn't run with space = "" empty
+			if (((i + 1) == infos.size()) || (infos[i]._path != infos[i + 1]._path))
+				space += "└"; //└
+			else
+				space += "├"; //├
+			*buffer += sprintf(*buffer, "\n%3i %3i %10i %*s%-*s",
+				i, infos[i]._level, infos[i]._size,
+				3 * (infos[i]._level + 1), space.c_str(), 20, infos[i]._name.c_str());
+		}
+	} else {
+		*buffer += sprintf(*buffer, "%s, format '%s' unknown!", header, format);
 	}
 }
 //---------------------------------------------------------------------
-#define DEF_VOLEN 4
-
-int64_t volFreeSize(const char * volPathFilename){
+void dirVCT(fs::FS *fs, const char *dirname, char *header,
+	std::vector<pa2img_t> &infos, const uint8_t depth){
+	if (!depth)
+		return;
+	File root = fs->open(dirname);
+	if (!root) {
+		sprintf(header, "Failed to open directory '%s'\\n", dirname);
+		return;
+	}
+	File file = root.openNextFile();
+	while (file) {
+		_DEBUG_Others_(9, "\n file '%s' '%s'", file.path(), file.name());
+		if (file.isDirectory()) {
+			if (depth) {
+				dirVCT(fs, file.path(), header, infos, depth - 1);
+			}
+		} else {
+//			SPrintF(sizeof(buffer), cnt, buffer, "%3i %7i\t%s\n", cnt_fil, file.size(),file.name());
+			pa2img_t record;
+			splitAfterLast(file.path(), record._path, record._name, "/\\");
+			// string s=file.name();
+			record._level = count(record._path.begin(), record._path.end(), '/') - 1;
+			record._size = file.size();
+			infos.push_back(record);
+			_DEBUG_Others_(9, "\n%03i) level %-3i, path '%s', name '%s', size '%-6i'",
+				infos.size(),
+				record._level, record._path.c_str(), record._name.c_str(), record._size);
+		}
+		file = root.openNextFile();
+	}
+}
+//---------------------------------------------------------------------
+void listDir(const char *format, char **buffer, const char *volName,
+	const char *dirname, const uint8_t depth){
+	//Serial.printf("\n*****>listDir buffer %p *buffer %p '%s'", buffer, *buffer, *buffer);
+	char header[128];
+	header[0] = 0;
+	fs::FS *fs = volFS(volName);
+	if (!fs) {
+		sprintf(header, "Volume '%s' is not mounted", volName);
+		return;
+	}
+	uint64_t totalBytes;
+	uint64_t usedBytes;
+	volSizes(volName, totalBytes, usedBytes);
+	sprintf(header, "Directory '%s%s' (%7llu Bytes free)",
+		volName, dirname, totalBytes - usedBytes);
+	std::vector<pa2img_t> *infos = new std::vector<pa2img_t>;
+	//Serial.printf("\n*****<listDir buffer %p *buffer %p '%s'", buffer, *buffer, *buffer);
+	std::string dirNAME = std::string(dirname);
+	if (dirNAME.length() > 1)
+		dirNAME = dirNAME.substr(0, dirNAME.length() - 1);
+	dirVCT(fs, dirNAME.c_str(), header + strlen(header), *infos, depth);
+	Serial.printf("\n==== cnt_fil %3i, depth %3i, path '%s'",
+		infos->size(), depth, dirname);
+	dirTEXT(format, buffer, header, volName, dirname, *infos);
+	infos->clear();
+}
+//---------------------------------------------------------------------
+int64_t volFreeSize(const char *volPathFilename){
 	char volBase[DEF_VOLEN + 1];
 	strncpy(volBase, volPathFilename, DEF_VOLEN);
 	volBase[DEF_VOLEN + 1] = 0;
@@ -145,12 +297,12 @@ int64_t volFreeSize(const char * volPathFilename){
 	}
 	return -1;
 }
-void volSizes(const String volName, uint64_t &totalBytes, uint64_t &usedBytes){
-	if (String("/FFS") == volName) {
+void volSizes(const char *volName, uint64_t &totalBytes, uint64_t &usedBytes){
+	if (0 == strcmp("/FFS", volName)) {
 		totalBytes = SPIFFS.totalBytes();
 		usedBytes = SPIFFS.usedBytes();
 	}
-	else if (String("/SSD") == volName) {
+	else if (0 == strcmp("/SSD", volName)) {
 		totalBytes = SD_MMC.totalBytes();
 		usedBytes = SD_MMC.usedBytes();
 	}
@@ -159,87 +311,13 @@ void volSizes(const String volName, uint64_t &totalBytes, uint64_t &usedBytes){
 		usedBytes = 0;
 	}
 }
-fs::FS* volFS(String &volName, const char *volpath){
-	volName = String(volpath).substring(0, DEF_VOLEN);
-	_DEBUG_Others_(3, "\nvstr='%s'", volName.c_str());
-	if (String("/FFS") == volName)
-		return &SPIFFS;
-	if (String("/SSD") == volName)
-		return &SD_MMC;
-	return nullptr;
-}
 //---------------------------------------------------------------------
 bool deleteFile(const char *volpath){
-	String volName;
-	fs::FS *fs = volFS(volName, volpath);
+	fs::FS *fs = volFS(volpath);
 	Serial.printf("\nTry deleting %s on fs %p", volpath, fs);
 	if (!fs)
 		return false;
 	return fs->remove(volpath + DEF_VOLEN);
-}
-//---------------------------------------------------------------------
-void listDirHTML(char **buffer, const char *volpath, uint8_t depth){
-	String volName;
-	fs::FS *fs = volFS(volName, volpath);
-	if (fs) {
-		uint64_t totalBytes;
-		uint64_t usedBytes;
-		volSizes(volName, totalBytes, usedBytes);
-		dirHTML(buffer, *fs, volName.c_str(), volpath + DEF_VOLEN,
-			depth, true, totalBytes, usedBytes);
-	}
-}
-//---------------------------------------------------------------------
-void listDir(fs::FS &fs, const char *dirname, uint8_t depth, bool SPIFFS){
-	static uint8_t level = 0;
-	Serial.printf("\nListing directory: '%s' depth %i", dirname, depth);
-
-	File root = fs.open(dirname);
-	if (!root) {
-		Serial.printf("\n%i Failed to open directory %s", depth, dirname);
-		return;
-	}
-	if (!root.isDirectory()) {
-		Serial.println("Not a directory");
-		return;
-	}
-	File file = root.openNextFile();
-	while (file) {
-		if (!file.isDirectory()) {
-			Serial.printf("\n%i %12i ", depth, file.size());
-			if (SPIFFS) {
-				Serial.printf(" %*s", 32, file.path());
-			} else {
-				Serial.printf(" %*s%*s ", 4 * level, "", 24, file.name());
-			}
-		}
-		file = root.openNextFile();
-	}
-	root = fs.open(dirname);
-	file = root.openNextFile();
-	while (file) {
-		if (file.isDirectory()) {
-			//Serial.printf("\n%i  DIR SDcards: '%s'",depth,file.name());
-			if (depth) {
-				String dir = String(dirname);
-				if (dir.length() > 1) // for "/" alone...
-					dir += "/";
-//		    	listDir(fs, (dir+String(file.name())).c_str(), depth -1,SPIFFS);
-				level++;
-				listDir(fs, file.path(), depth - 1, SPIFFS);
-				level--;
-			}
-		}
-		file = root.openNextFile();
-	}
-}
-//---------------------------------------------------------------------
-void listDirSPI(const char *dirname, uint8_t depth){
-	listDir(SPIFFS, dirname, depth, true);
-}
-//---------------------------------------------------------------------
-void listDirSDC(const char *dirname, uint8_t depth){
-	listDir(SD_MMC, dirname, depth, false);
 }
 //---------------------------------------------------------------------
 void readFile(fs::FS &fs, const char *path){

@@ -1,0 +1,415 @@
+#include "000_TASKS.h"
+#include "000_DEBUG.h"
+t_tskMON tskMON;
+uint8_t hardPIN_isr = 4; // INPUT SOFT INTERRUPT RISING UP !!!
+//c_linkISR linkISR;
+/*
+ * Task control block.  A task control block (TCB) is allocated for each task,
+ * and stores task state information, including a pointer to the task's context
+ * (the task's run time environment, including register values)
+ */
+typedef struct tskTaskControlBlock       /* The old naming convention is used to prevent breaking kernel aware debuggers. */
+{
+    volatile StackType_t * pxTopOfStack; /*< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
+
+    #if ( portUSING_MPU_WRAPPERS == 1 )
+        xMPU_SETTINGS xMPUSettings; /*< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
+    #endif
+
+    ListItem_t xStateListItem;                  /*< The list that the state list item of a task is reference from denotes the state of that task (Ready, Blocked, Suspended ). */
+    ListItem_t xEventListItem;                  /*< Used to reference a task from an event list. */
+    UBaseType_t uxPriority;                     /*< The priority of the task.  0 is the lowest priority. */
+    StackType_t * pxStack;                      /*< Points to the start of the stack. */
+    char pcTaskName[ configMAX_TASK_NAME_LEN ]; /*< Descriptive name given to the task when created.  Facilitates debugging only. */ /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
+
+    #if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
+        StackType_t * pxEndOfStack; /*< Points to the highest valid address for the stack. */
+    #endif
+
+    #if ( portCRITICAL_NESTING_IN_TCB == 1 )
+        UBaseType_t uxCriticalNesting; /*< Holds the critical section nesting depth for ports that do not maintain their own count in the port layer. */
+    #endif
+
+    #if ( configUSE_TRACE_FACILITY == 1 )
+        UBaseType_t uxTCBNumber;  /*< Stores a number that increments each time a TCB is created.  It allows debuggers to determine when a task has been deleted and then recreated. */
+        UBaseType_t uxTaskNumber; /*< Stores a number specifically for use by third party trace code. */
+    #endif
+
+    #if ( configUSE_MUTEXES == 1 )
+        UBaseType_t uxBasePriority; /*< The priority last assigned to the task - used by the priority inheritance mechanism. */
+        UBaseType_t uxMutexesHeld;
+    #endif
+
+    #if ( configUSE_APPLICATION_TASK_TAG == 1 )
+        TaskHookFunction_t pxTaskTag;
+    #endif
+
+    #if ( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
+        void * pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
+    #endif
+
+    #if ( configGENERATE_RUN_TIME_STATS == 1 )
+        uint32_t ulRunTimeCounter; /*< Stores the amount of time the task has spent in the Running state. */
+    #endif
+
+    #if ( configUSE_NEWLIB_REENTRANT == 1 )
+        /* Allocate a Newlib reent structure that is specific to this task.
+         * Note Newlib support has been included by popular demand, but is not
+         * used by the FreeRTOS maintainers themselves.  FreeRTOS is not
+         * responsible for resulting newlib operation.  User must be familiar with
+         * newlib and must provide system-wide implementations of the necessary
+         * stubs. Be warned that (at the time of writing) the current newlib design
+         * implements a system-wide malloc() that must be provided with locks.
+         *
+         * See the third party link http://www.nadler.com/embedded/newlibAndFreeRTOS.html
+         * for additional information. */
+        struct  _reent xNewLib_reent;
+    #endif
+/*
+    #if ( configUSE_TASK_NOTIFICATIONS == 1 )
+        volatile uint32_t ulNotifiedValue[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
+        volatile uint8_t ucNotifyState[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
+    #endif
+*/
+    /* See the comments in FreeRTOS.h with the definition of
+     * tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE. */
+    #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 !e9029 Macro has been consolidated for readability reasons. */
+        uint8_t ucStaticallyAllocated;                     /*< Set to pdTRUE if the task is a statically allocated to ensure no attempt is made to free the memory. */
+    #endif
+
+    #if ( INCLUDE_xTaskAbortDelay == 1 )
+        uint8_t ucDelayAborted;
+    #endif
+
+    #if ( configUSE_POSIX_ERRNO == 1 )
+        int iTaskErrno;
+    #endif
+} tskTCB;
+
+/* The old tskTCB name is maintained above then typedefed to the new TCB_t name
+ * below to enable the use of older kernel aware debuggers. */
+typedef tskTCB TCB_t;
+/* Lists for ready and blocked tasks. --------------------
+ * xDelayedTaskList1 and xDelayedTaskList2 could be moved to function scope but
+ * doing so breaks some kernel aware debuggers and debuggers that rely on removing
+ * the static qualifier. */
+PRIVILEGED_DATA static List_t pxReadyTasksLists[ configMAX_PRIORITIES ]; /*< Prioritised ready tasks. */
+PRIVILEGED_DATA static List_t xDelayedTaskList1;                         /*< Delayed tasks. */
+PRIVILEGED_DATA static List_t xDelayedTaskList2;                         /*< Delayed tasks (two lists are used - one for delays that have overflowed the current tick count. */
+PRIVILEGED_DATA static List_t * volatile pxDelayedTaskList;              /*< Points to the delayed task list currently being used. */
+PRIVILEGED_DATA static List_t * volatile pxOverflowDelayedTaskList;      /*< Points to the delayed task list currently being used to hold tasks that have overflowed the current tick count. */
+PRIVILEGED_DATA static List_t xPendingReadyList;                         /*< Tasks that have been readied while the scheduler was suspended.  They will be moved to the ready list when the scheduler is resumed. */
+/*-----------------------------------------------------------*/
+/*
+ * Fills an TaskStatus_t structure with information on each task that is
+ * referenced from the pxList list (which may be a ready list, a delayed list,
+ * a suspended list, etc.).
+ *
+ * THIS FUNCTION IS INTENDED FOR DEBUGGING ONLY, AND SHOULD NOT BE CALLED FROM
+ * NORMAL APPLICATION CODE.
+ */
+#define configUSE_TRACE_FACILITY 1
+#if ( configUSE_TRACE_FACILITY == 1 )
+
+    static UBaseType_t prvListTasksWithinSingleList( TaskStatus_t * pxTaskStatusArray,
+                                                     List_t * pxList,
+                                                     eTaskState eState )
+    {
+        configLIST_VOLATILE TCB_t * pxNextTCB, * pxFirstTCB;
+        UBaseType_t uxTask = 0;
+
+        if( listCURRENT_LIST_LENGTH( pxList ) > ( UBaseType_t ) 0 )
+        {
+            listGET_OWNER_OF_NEXT_ENTRY( pxFirstTCB, pxList ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+
+            /* Populate an TaskStatus_t structure within the
+             * pxTaskStatusArray array for each task that is referenced from
+             * pxList.  See the definition of TaskStatus_t in task.h for the
+             * meaning of each TaskStatus_t structure member. */
+            do
+            {
+                listGET_OWNER_OF_NEXT_ENTRY( pxNextTCB, pxList ); /*lint !e9079 void * is used as this macro is used with timers and co-routines too.  Alignment is known to be fine as the type of the pointer stored and retrieved is the same. */
+                vTaskGetInfo( ( TaskHandle_t ) pxNextTCB, &( pxTaskStatusArray[ uxTask ] ), pdTRUE, eState );
+                uxTask++;
+            } while( pxNextTCB != pxFirstTCB );
+        }
+        else
+        {
+            mtCOVERAGE_TEST_MARKER();
+        }
+
+        return uxTask;
+    }
+
+#endif /* configUSE_TRACE_FACILITY */
+
+/*
+ * Place the task represented by pxTCB into the appropriate ready list for
+ * the task.  It is inserted at the end of the list.
+ */
+#define prvAddTaskToReadyList( pxTCB )                                                                 \
+    traceMOVED_TASK_TO_READY_STATE( pxTCB );                                                           \
+    taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );                                                \
+    vListInsertEnd( &( pxReadyTasksLists[ ( pxTCB )->uxPriority ] ), &( ( pxTCB )->xStateListItem ) ); \
+    tracePOST_MOVED_TASK_TO_READY_STATE( pxTCB )
+
+UBaseType_t uxTaskGetSystemState(TaskStatus_t *const pxTaskStatusArray,
+	const UBaseType_t uxArraySize, uint32_t *const pulTotalRunTime){
+	UBaseType_t uxTask = 0, uxQueue = configMAX_PRIORITIES;
+
+	vTaskSuspendAll();
+	{
+		/* Is there a space in the array for each task in the system? */
+//@		if (uxArraySize >= uxCurrentNumberOfTasks) {
+		if (uxArraySize >= uxTaskGetNumberOfTasks()) {
+			/* Fill in an TaskStatus_t structure with information on each
+			 * task in the Ready state. */
+			do {
+				uxQueue--;
+				uxTask += prvListTasksWithinSingleList(&(pxTaskStatusArray[uxTask]),
+					&(pxReadyTasksLists[uxQueue]), eReady);
+			} while (uxQueue > (UBaseType_t)tskIDLE_PRIORITY); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
+
+			/* Fill in an TaskStatus_t structure with information on each
+			 * task in the Blocked state. */
+			uxTask += prvListTasksWithinSingleList(&(pxTaskStatusArray[uxTask]),
+				(List_t*)pxDelayedTaskList, eBlocked);
+			uxTask += prvListTasksWithinSingleList(&(pxTaskStatusArray[uxTask]),
+				(List_t*)pxOverflowDelayedTaskList, eBlocked);
+
+#if ( INCLUDE_vTaskDelete == 1 )
+			{
+                    /* Fill in an TaskStatus_t structure with information on
+                     * each task that has been deleted but not yet cleaned up. */
+                    uxTask += prvListTasksWithinSingleList( &( pxTaskStatusArray[ uxTask ] ), &xTasksWaitingTermination, eDeleted );
+                }
+#endif
+
+#if ( INCLUDE_vTaskSuspend == 1 )
+			{
+                    /* Fill in an TaskStatus_t structure with information on
+                     * each task in the Suspended state. */
+                    uxTask += prvListTasksWithinSingleList( &( pxTaskStatusArray[ uxTask ] ), &xSuspendedTaskList, eSuspended );
+                }
+#endif
+
+#if ( configGENERATE_RUN_TIME_STATS == 1 )
+			{
+                    if( pulTotalRunTime != NULL )                    {
+                        #ifdef portALT_GET_RUN_TIME_COUNTER_VALUE
+                            portALT_GET_RUN_TIME_COUNTER_VALUE( ( *pulTotalRunTime ) );
+                        #else
+                            *pulTotalRunTime = portGET_RUN_TIME_COUNTER_VALUE();
+                        #endif
+                    }
+                }
+#else /* if ( configGENERATE_RUN_TIME_STATS == 1 ) */
+			{
+				if (pulTotalRunTime != NULL) {
+					*pulTotalRunTime = 0;
+				}
+			}
+#endif /* if ( configGENERATE_RUN_TIME_STATS == 1 ) */
+		}
+		else {
+			mtCOVERAGE_TEST_MARKER();
+		}
+	}
+	(void)xTaskResumeAll();
+
+	return uxTask;
+}
+
+void vTaskGetRunTimeStats(char *pcWriteBuffer){
+	TaskStatus_t *pxTaskStatusArray;
+	volatile UBaseType_t uxArraySize, x;
+	uint32_t ulTotalRunTime, ulStatsAsPercentage;
+
+	// Make sure the write buffer does not contain a string.
+	*pcWriteBuffer = 0x00;
+
+	// Take a snapshot of the number of tasks in case it changes while this
+	// function is executing.
+	uxArraySize = uxTaskGetNumberOfTasks();
+
+	// Allocate a TaskStatus_t structure for each task.  An array could be
+	// allocated statically at compile time.
+	pxTaskStatusArray = (TaskStatus_t*)pvPortMalloc(uxArraySize * sizeof(TaskStatus_t));
+
+	if (pxTaskStatusArray != NULL) {
+		// Generate raw status information about each task.
+		uxArraySize = uxTaskGetSystemState(pxTaskStatusArray, uxArraySize, &ulTotalRunTime);
+
+		// For percentage calculations.
+		ulTotalRunTime /= 100UL;
+
+		// Avoid divide by zero errors.
+		if (ulTotalRunTime > 0) {
+			// For each populated position in the pxTaskStatusArray array,
+			// format the raw data as human readable ASCII data
+			for (x = 0; x < uxArraySize; x++) {
+				// What percentage of the total run time has the task used?
+				// This will always be rounded down to the nearest integer.
+				// ulTotalRunTimeDiv100 has already been divided by 100.
+				ulStatsAsPercentage = pxTaskStatusArray[x].ulRunTimeCounter / ulTotalRunTime;
+
+				if (ulStatsAsPercentage > 0UL) {
+					sprintf(pcWriteBuffer, "%s\t\t%lu\t\t%lu%%\r\n",
+						pxTaskStatusArray[x].pcTaskName, pxTaskStatusArray[x].ulRunTimeCounter,
+						ulStatsAsPercentage);
+				} else {
+					// If the percentage is zero here then the task has
+					// consumed less than 1% of the total run time.
+					sprintf(pcWriteBuffer, "%s\t\t%lu\t\t<1%%\r\n", pxTaskStatusArray[x].pcTaskName,
+						pxTaskStatusArray[x].ulRunTimeCounter);
+				}
+
+				pcWriteBuffer += strlen((char*)pcWriteBuffer);
+			}
+		}
+
+		// The array is no longer needed, free the memory it consumes.
+		vPortFree(pxTaskStatusArray);
+	}
+}
+
+/**
+ * @fn void iimu_ISR()
+ * @brief IRAM_ATTR Handler for I²C ISR harware interrupt (running at 100 Hz)
+ *
+ * Notify the \ref imu_HDL task to which \ref iimu_TASK is attached
+ */
+void IRAM_ATTR iimu_ISR() {
+	extern bool imuFlag;
+	extern uint64_t isr_microTimeStamp;
+	extern TaskHandle_t ximu_HDL;
+	isr_microTimeStamp = micro_TS();
+	imuFlag = true;
+	BaseType_t xHigherPriorityTaskWoken = pdTRUE;
+	if (pdTRUE != xTaskNotifyFromISR(ximu_HDL, 0, eSetValueWithoutOverwrite, & xHigherPriorityTaskWoken))
+	{
+		/**< @ todo ERROR !!! Tragic blocks I²C for the next ESP restart maybe detach ISR pin */
+	}
+}
+//---------------------------------------------------------------------
+uint8_t c_linkISR::pin(){
+	return hardPIN_isr;
+}
+void c_linkISR::attach_ISR(){
+	Serial.printf("\nATTACHING ISR...");
+	attachInterrupt(hardPIN_isr, iimu_ISR, RISING); // define interrupt for intPin output of MPU9250
+}
+void c_linkISR::detach_ISR(){
+	detachInterrupt(hardPIN_isr); // define interrupt for intPin output of MPU9250
+	Serial.printf("\nDETACHING ISR...");
+}
+///////////////////////////////////////////////////////////////////////
+
+/**
+ * @fn void kill_tasks()
+ * @brief Stops all rover tasks to go in OTA mode
+ */
+void kill_tasks(){
+//	tasks_running = false;
+}
+///////////////////////////////////////////////////////////////////////
+int8_t* registerFCT(const e_tasks tskIdx, const char *NAME, int8_t *THIS_DBGLVL,
+	const int PRIORITY){
+	s_tskInfo_X ti;
+	ti.type = 'F';
+	ti.name = NAME;
+	ti.DebugLVL = THIS_DBGLVL;
+	ti.TH = (TaskHandle_t*)xTaskGetCurrentTaskHandle();
+	ti.core = xPortGetCoreID();
+	ti.oldPrio = uxTaskPriorityGet(ti.TH);
+	if (PRIORITY != 0)
+		vTaskPrioritySet(ti.TH, PRIORITY);
+	ti.curPrio = uxTaskPriorityGet(ti.TH);
+	tskMON[static_cast<std::underlying_type<e_tasks>::type>(tskIdx)] = ti;
+	return THIS_DBGLVL;
+}
+/**
+ * @fn void launchTASK(const e_tasks tskIdx, TaskHandle_t &TSKHDL, const char *NAME, TaskFunction_t F,
+ void *PARAM, int8_t *THIS_DBGLVL, const uint32_t STACK, const int CORE const int PRIORITY=0, const bool LAUNCH=true)
+ * @param tskIdx
+ * @param TSKHDL task handler
+ * @param NAME task name
+ * @param F task functional
+ * @param PARAM task user parameters
+ * @param THIS_DBGLVL task debug level
+ * @param STACK size
+ * @param CORE number
+ * @param PRIORITY unused if LAUNCH is false, get the priority of existing task
+ */
+void launchTASK(const e_tasks tskIdx, TaskHandle_t &TSKHDL, const char *NAME, TaskFunction_t F,
+	void *PARAM, int8_t *THIS_DBGLVL, const uint32_t STACK, const int CORE, const int PRIORITY){
+	s_tskInfo_X ti;
+	ti.type = 'T';
+	ti.name = NAME;
+	ti.DebugLVL = THIS_DBGLVL;
+	ti.core = CORE;
+	ti.stack = STACK;
+	ti.curPrio = PRIORITY;
+	ti.oldPrio = PRIORITY;
+	ti.tFct = (TaskFunction_t*)F;
+	ti.Param = PARAM;
+	ti.TH = (TaskHandle_t*)TSKHDL;
+	tskMON[static_cast<std::underlying_type<e_tasks>::type>(tskIdx)] = ti;
+	xTaskCreatePinnedToCore(F, // Task function.
+		NAME, // name of task.
+		STACK, // Stack size
+		&tskMON[static_cast<std::underlying_type<e_tasks>::type>(tskIdx)], // parameter of the task
+		PRIORITY, //ESP_TASK_PRIO_MAX - 14, // priority of the task from (tskIDLE_PRIORITY + 1) to (configMAX_PRIORITIES -1 )
+		&TSKHDL, // Task handle to keep track of created task
+		CORE); // pin task to core
+	tskMON[static_cast<std::underlying_type<e_tasks>::type>(tskIdx)].TH = (TaskHandle_t*)TSKHDL;
+}
+String dump_ATASK(const e_tasks tskIdx){
+	char buffer[512];
+	int16_t cnt = 0;
+	buffer[0] = 0;
+	s_tskInfo_X ti = tskMON[static_cast<std::underlying_type<e_tasks>::type>(tskIdx)];
+	if (ti.TH != nullptr)
+		ti.stackLeft = uxTaskGetStackHighWaterMark(ti.TH);
+
+	SPrintF(sizeof(buffer), cnt, buffer,
+		"%c %s\t%2i   %2i/%2i   %2i %5lu/%5lu %-10p %-10p %-10p %-10p",
+		ti.type,
+		ti.name,
+		(ti.DebugLVL != nullptr) ? (*ti.DebugLVL) : (-1),
+		ti.curPrio, // current get priority
+		ti.oldPrio, // initial get priority
+		ti.core,
+		ti.stackLeft,
+		ti.stack,
+		ti.TH,
+		ti.Param,
+		ti.tFct,
+		ti.scratch
+		);
+	if (ti.scratch != nullptr)
+		SPrintF(sizeof(buffer), cnt, buffer, "\n%s", ti.scratch->buffer);
+	return String(buffer);
+}
+String dump_TASKS(){
+	char buffer[DEF_DBGMSG_BUFSIZE];
+	int16_t cnt = 0;
+	buffer[0] = 0; // if no task...
+	SPrintF(sizeof(buffer), cnt, buffer,
+		"N° * name\tDbg pri/old core left/stack   TH         Param      tFct       Scratch (%i)",
+		uxTaskGetNumberOfTasks());
+	for (int e = 0; e < static_cast<int>(e_tasks::END); e++) {
+		SPrintF(sizeof(buffer), cnt, buffer, "\n%2i %s", e, dump_ATASK(e_tasks(e)).c_str());
+	}
+	vTaskGetRunTimeStats(buffer);
+	return String(buffer);
+}
+s_tskInfo_X* tskFind(const char CC){
+	for (int e = 0; e < static_cast<int>(e_tasks::END); e++) {
+		s_tskInfo_X *ti = &tskMON[static_cast<std::underlying_type<e_tasks>::type>(e)];
+		if (CC == ti->name[0])
+			return ti;
+	}
+	return nullptr;
+}
+///////////////////////////////////////////////////////////////////////

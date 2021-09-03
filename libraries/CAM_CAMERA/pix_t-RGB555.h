@@ -54,7 +54,7 @@ private:
 	/**
 	 * @brief 2 bytes unsigned word representing the RGB555 encoded pixel color value
 	 */
-	uint16_t pix;
+	uint16_t pix=0;
 public:
 	RGB555_t() {}
 	inline RGB555_t(const uint16_t& a) {pix=a;}
@@ -105,7 +105,7 @@ public:
 		uint16_t cnt=0;
 		char buffer[128];
 		cnt+=sprintf(&buffer[cnt] ,"%s",COMMENT ?COMMENT:"");
-		cnt+=sprintf(&buffer[cnt] ," 555:hx%04x ║%3i║ "H555_PAT""B555_PAT"",pix,norm(), H555(pix), BIN16(pix));
+		cnt+=sprintf(&buffer[cnt] ," 555:hx%04x ║%3i║ " H555_PAT "" B555_PAT "",pix,norm(), H555(pix), BIN16(pix));
 		cnt+=sprintf(&buffer[cnt] ,"%s",BUFFER?(buf_Info(BUFFER, BUFLEN).c_str()):"");
 		return String(buffer);
 	}

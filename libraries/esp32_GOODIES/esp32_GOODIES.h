@@ -57,7 +57,7 @@ void reboot(const char *REASON, ...);
  * Cf. https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/spi_flash.html#iram-safe-interrupt-handlers
  * @return esp_timer_get_time() in microsecond since boot
  */
-uint64_t IRAM_ATTR micro_TS();
+//uint64_t IRAM_ATTR micro_TS();
 void printSysState();
 void printStackLeft(const char *COMMENT = nullptr);
 void sprint(const char *FORMAT, ...);

@@ -143,16 +143,16 @@ uint8_t c_Image<PIXL>::Decode(uint8_t *grid, const uint8_t gridStep, const bool 
 								*Pxlptr = PIXL(0, 0, Pxlptr->blue());
 						} else if (gridCol == 2) {
 							if (gridRow == 1)
-								*Pxlptr = 2 * PIXL(Pxlptr->red(), 0, 0);
+								*Pxlptr = uint8_t{2} * PIXL(Pxlptr->red(), 0, 0);
 							if (gridRow == 2)
-								*Pxlptr = 2 * PIXL(0, Pxlptr->green(), 0);
+								*Pxlptr = uint8_t{2} * PIXL(0, Pxlptr->green(), 0);
 							if (gridRow == 3)
-								*Pxlptr = PIXL(0, 0, Pxlptr->blue()) * 2;
+								*Pxlptr = PIXL(0, 0, Pxlptr->blue()) * uint8_t{2};
 						} else if (gridCol == 3) {
 							if (gridRow == 1)
 								*Pxlptr = Pxlptr->gray();
 							if (gridRow == 2)
-								*Pxlptr |= 2 * *Pxlptr;
+								*Pxlptr |= uint8_t{2} * *Pxlptr;
 							if (gridRow == 3)
 								*Pxlptr ^= *Pxlptr;
 						}

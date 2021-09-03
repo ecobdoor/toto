@@ -58,7 +58,7 @@ void c_gTerminal<PIXL>::display(const char CAR){
 		uint16_t savCol = _col;
 		for (uint8_t r = 1; r < DEF_FH; r++) {
 			for (uint8_t c = 0; c < Wfont + 2; c++) {
-				*(PIXL*)&_buffer[_row + _col] = *(PIXL*)&_buffer[_row + _col] / 2;
+				*(PIXL*)&_buffer[_row + _col] = *(PIXL*)&_buffer[_row + _col] / uint8_t{2};
 				_col++;
 			}
 			_col = savCol;

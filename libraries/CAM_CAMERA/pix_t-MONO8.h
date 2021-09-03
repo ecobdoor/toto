@@ -8,7 +8,6 @@
  */
 #define BIN44_PAT "{%c%c%c%c-%c%c%c%c}"
 ///////////////////////////////////////////////////////////////////////
-// @formatter:off
 /**
  * @class MONO8_t
  * @brief class  MONO8_t is based on a single uint8_t, pointer++ runs on frame buffer!!!
@@ -38,12 +37,16 @@
  *  * void sum(uint32_t & SUM) allows to sum the RGB888::norm() up to 16 mega pixels (4096x4096)
  * Others criteria could be developed
  */
-class  MONO8_t {
+class mono8_t {
+protected:
+	uint8_t pix = 0;
+};
+// @formatter:off
+class  MONO8_t : public mono8_t {
 private:
 	/**
 	 * @brief 1 unsigned byte representing a gray value (or a palette address)
 	 */
-	uint8_t pix;
 	inline void _plus (const MONO8_t cst){int16_t PIX=(int16_t)pix+cst.pix;pix=(255<PIX)?255:PIX;}
 	inline void _minus(const MONO8_t cst){int16_t PIX=(int16_t)pix-cst.pix;pix=(PIX<0)?0:PIX;}
 
@@ -54,7 +57,7 @@ public:
 		uint16_t cnt=0;
 		char buffer[128];
 		cnt+=sprintf(&buffer[cnt],"%s",COMMENT    ?COMMENT:"");
-		cnt+=sprintf(&buffer[cnt]," MONO:h_%02x ║%3i║ [%02X]"BIN44_PAT"",pix,norm(),pix,BIN8(pix));
+		cnt+=sprintf(&buffer[cnt]," MONO:h_%02x ║%3i║ [%02X]" BIN44_PAT "",pix,norm(),pix,BIN8(pix));
 		cnt+=sprintf(&buffer[cnt],"%s",BUFFER?(buf_Info(BUFFER,BUFLEN).c_str()):"");
 		return String(buffer);
 	}
