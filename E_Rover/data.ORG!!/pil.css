@@ -1,0 +1,218 @@
+body {
+       position: fixed;
+    width: 100%;
+    height: 100%;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    font-size: 12px;
+    /*
+  display: block;
+  margin: 0px;
+  width:500px;
+  height:400px;
+  overflow: hidden;
+  */
+}
+.kfwork{
+    margin-top: 20px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+/*
+    MONITORING
+    */
+#mv2_horizontalBar{
+/*background-color: transparent;*/
+z-index:1000;
+}
+.mv2_horizontalBarContainer{
+    width: 382px;
+    height: 40px;
+    background: rgba(0,0,0,.3);
+    margin-top: 0px;
+    position: absolute;
+        top:266px;
+        left:0px;
+    margin-left: 40px;
+    border-radius: 20px;
+    z-index:-1;
+}
+.mv2_horizontalBar{
+    width: 382px;
+    height: 40px;
+    background: rgba(0,0,0,.3);
+    margin-top: 0px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    margin-left: 0px;
+    border-radius: 20px;
+    z-index:-1;
+}
+#mv2_horizontalCursor{
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    /*border-radius: 50%;*/
+    margin-top: 1px;
+    background: transparent;
+    background-image:url('https://bdoor.hd.free.fr/VEITECH/MMVVT/Theme/mv2_timelineCursor.png');
+    background-size: 38px 38px;
+    background-position:center center; 
+    background-repeat:no-repeat;
+}
+/*
+    PILOT
+    */
+.mv2_select{
+    background: rgba(200,0,255);
+    width: 128px;
+    height: 20px;
+    font-size: 12px;
+}
+.classTimer{
+    width: 58px;
+	
+}
+.classExec{
+    width: 80px;
+	
+}
+.classT_i_o{
+    background: rgba(200,0,255);
+    width: 380px;
+    height: 20px;
+    font-size: 12px;
+}
+.classTA_i_o{
+    background: rgba(200,0,255);
+    width: 380px;
+    height: 190px;
+	font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+.classDebug{
+    width: 32px;
+    height: 20px;
+}
+#mv2_pilotJS{
+}
+.mv2_table{
+    margin-left: 25px;
+    position: absolute;
+        top:260px;
+        left:10px;
+    z-index:10000;
+    margin-left: 0px;
+    font-size: 15px;
+    color: #444;
+}
+.mv2_pilotJSContainer{
+    width: 250px;
+    height: 250px;
+    background: rgba(0,0,0,.3);
+    margin-left: 25px;
+    position: absolute;
+        top:10px;
+        left:10px;
+    z-index:10000;
+    margin-left: 0px;
+    border-radius: 20px;
+}
+.mv2_pilotJS{
+    width: 250px;
+    height: 250px;
+    background: rgba(0,0,0,.3);
+    margin-left: 25px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    z-index:10000;
+    margin-left: 0px;
+    border-radius: 20px;
+}
+#mv2_pilotCursor{
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin-left: 1px;
+    background: red;
+    z-index:10000;
+}
+div.examplediv {
+    margin-left: 37px;
+    margin-top: 37px;
+    width: 176px;
+    height: 176px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    background-color: lightblue;
+    /* Rotate div */
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+}
+#mv2_pilotHreticle{
+    width: 250px;
+    height: 1px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    margin-left: 0px;
+    margin-top: 125px;
+    background: red;
+    z-index:10000;
+}
+#mv2_pilotVreticle{
+    width: 1px;
+    height: 250px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    margin-left: 125px;
+    margin-top: 0px;
+    background: red;
+}
+/*
+    VERTICAL
+    */
+#mv2_verticalBar{
+}
+.mv2_verticalBarContainer{
+    width: 40px;
+    height: 235px;
+    background: rgba(0,0,0,.3);
+    margin-left: 25px;
+    position: absolute;
+        top:30px;
+        left:0px;
+    z-index:10000;
+    margin-left: 0px;
+    border-radius: 20px;
+}
+.mv2_verticalBar{
+    width: 40px;
+    height: 235px;
+    background: rgba(0,0,0,.3);
+    margin-left: 25px;
+    position: absolute;
+        top:0px;
+        left:0px;
+    z-index:10000;
+    margin-left: 0px;
+    border-radius: 20px;
+}
+#mv2_verticalCursor{
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    margin-left: 1px;
+    background: black;
+}
+/*===========================================*/
