@@ -1,0 +1,1364 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"uint",
+				"uint8_t"
+			],
+			[
+				"_las",
+				"_last_serverReady"
+			],
+			[
+				"n",
+				"nullptr"
+			],
+			[
+				"r",
+				"reveive"
+			],
+			[
+				"l",
+				"length"
+			],
+			[
+				"to",
+				"toString"
+			],
+			[
+				"re",
+				"return"
+			],
+			[
+				"int",
+				"int8_t"
+			],
+			[
+				"print",
+				"printf\tprintf …"
+			],
+			[
+				"c",
+				"c_str"
+			],
+			[
+				"aff",
+				"aff_dbg"
+			],
+			[
+				"P",
+				"PPP"
+			],
+			[
+				"aff_",
+				"aff_title"
+			],
+			[
+				"VA",
+				"VALUES"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "CameraWebServer_999.ino",
+			"settings":
+			{
+				"buffer_size": 2570,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_SDCARD.h",
+			"settings":
+			{
+				"buffer_size": 947,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_ESPINFO.h",
+			"settings":
+			{
+				"buffer_size": 314,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 25 files for \"spiffs\"\n\n/media/DEV/ROB_000/rover/CameraWebServer_999/000_MAIL.cpp:\n    1  \n    2  #include \"000_MAIL.h\"\n    3: #include \"SPIFFS.h\" \n    4  #include \"SD.h\" \n    5  ///////////////////////////////////////////////////////////////////////\n    .\n  268  }\n  269  //---------------------------------------------------------------------\n  270: bool createFileSPIffs(){\n  271  \tuint8_t buf[512];\n  272:     //SPIFFS.format();\n  273  \n  274:     if (SPIFFS.exists(\"/green.png\"))\n  275:   \t\tSPIFFS.remove(\"/green.png\");\n  276: \tif (SPIFFS.exists(\"/bin2.dat\"))\n  277:   \t\tSPIFFS.remove(\"/bin2.dat\");\n  278    \n  279: \tSerial.println(\"Preparing SPIFFS attachments...\");\n  280  \n  281  \tconst char *greenImg = \"iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAoUlEQVR42u3RAQ0AMAgAoJviyWxtAtNYwzmoQGT/eqwRQoQgRAhChCBECEKECBGCECEIEYIQIQgRghCECEGIEIQIQYgQhCBECEKEIEQIQoQgBCFCECIEIUIQIgQhCBGCECEIEYIQIQhBiBCECEGIEIQIQQhChCBECEKEIEQIQhAiBCFCECIEIUIQghAhCBGCECEIEYIQIUKEIEQIQoQg5LoBBaDPbQYiMoMAAAAASUVORK5CYII=\";\n  282  \n  283:   \tFile file = SPIFFS.open(\"/green.png\", FILE_WRITE);\n  284  \n  285  \tfile.print(greenImg);\n  286  \tfile.close();\n  287  \n  288: \tfile = SPIFFS.open(\"/bin2.dat\", FILE_WRITE);\n  289  \n  290      buf[0] = 'H';\n\n/media/DEV/ROB_000/rover/CameraWebServer_999/000_SPIFFS.cpp:\n    1  \n    2: #include \"000_SPIFFS.h\"\n    3: #include \"SPIFFS.h\" \n    4  ///////////////////////////////////////////////////////////////////////\n    5  //---------------------------------------------------------------------\n    6: bool SETUP_SPIFFS(){\n    7: \tif(!SPIFFS.begin()){\n    8: \t\tSerial.print(\"\\nNo SPIFFS !!!\");\n    9  \t\treturn false;\n   10  \t}\n\n/media/DEV/ROB_000/rover/CameraWebServer_999/000_SPIFFS.h:\n    1  \n    2: #ifndef __000_SPIFFS__\n    3: #define __000_SPIFFS__\n    4  ///////////////////////////////////////////////////////////////////////\n    5  //#include \"../app_httpd.cpp\"\n    6  ///////////////////////////////////////////////////////////////////////\n    7: bool SETUP_SPIFFS();\n    8  ///////////////////////////////////////////////////////////////////////\n    9  #endif\n\n/media/DEV/ROB_000/rover/CameraWebServer_999/CameraWebServer_999.ino:\n   27  #include \"000_WIFI.h\"\n   28  #include \"000_SDCARD.h\"\n   29: //#include \"000_SPIFFS.h\" // No SPIFFS on ESP32-CAM\n   30  //#include \"000_EEPROM.h\"\n   31  #include \"000_CAMERA.h\"\n   ..\n   55      readFile(SD_MMC,\"/ca_cert.pem\");\n   56  //    return;\n   57:  //   if(!SETUP_SPIFFS()) return;\n   58      if(!SETUP_WIFI(WIFI_SSID,WIFI_PSWD)) \n   59          return;\n\n/media/DEV/ROB_000/rover/CameraWebServerMail/CameraWebServerMail.ino:\n  201    }\n  202  #endif\n  203: //#define DEF_SPIFFS\n  204: #ifdef DEF_SPIFFS\n  205  \n  206:   Serial.println(\"Mounting SPIFFS...\");\n  207  \n  208  #if defined(ESP32)\n  209:   if (SPIFFS.begin(true))\n  210  #elif defined(ESP8266)\n  211:   if (SPIFFS.begin())\n  212  #endif\n  213    {\n  214:     //SPIFFS.format();\n  215  \n  216:     if (SPIFFS.exists(\"/green.png\"))\n  217:       SPIFFS.remove(\"/green.png\");\n  218:     if (SPIFFS.exists(\"/bin2.dat\"))\n  219:       SPIFFS.remove(\"/bin2.dat\");\n  220        \n  221:     Serial.println(\"Preparing SPIFFS attachments...\");\n  222  \n  223      const char *greenImg = \"iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAoUlEQVR42u3RAQ0AMAgAoJviyWxtAtNYwzmoQGT/eqwRQoQgRAhChCBECEKECBGCECEIEYIQIQgRghCECEGIEIQIQYgQhCBECEKEIEQIQoQgBCFCECIEIUIQIgQhCBGCECEIEYIQIQhBiBCECEGIEIQIQQhChCBECEKEIEQIQhAiBCFCECIEIUIQghAhCBGCECEIEYIQIUKEIEQIQoQg5LoBBaDPbQYiMoMAAAAASUVORK5CYII=\";\n  224  \n  225  #if defined(ESP32)\n  226:     File file = SPIFFS.open(\"/green.png\", FILE_WRITE);\n  227  #elif defined(ESP8266)\n  228:     File file = SPIFFS.open(\"/green.png\", \"w\");\n  229  #endif\n  230  \n  ...\n  233  \n  234  #if defined(ESP32)\n  235:     file = SPIFFS.open(\"/bin2.dat\", FILE_WRITE);\n  236  #elif defined(ESP8266)\n  237:     file = SPIFFS.open(\"/bin2.dat\", \"w\");\n  238  #endif\n  239  \n  ...\n  264    else\n  265    {\n  266:     Serial.println(\"SPIFFS Monting Failed\");\n  267    }\n  268  #endif\n\n37 matches across 5 files\n",
+			"settings":
+			{
+				"buffer_size": 4053,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "/media/DEV/ROB_000/rover/CameraWebServerMail/CameraWebServerMail.ino",
+			"settings":
+			{
+				"buffer_size": 13664,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/media/DEV/ROB_000/rover/CameraWebServer/app_httpd.cpp",
+			"settings":
+			{
+				"buffer_size": 24013,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_MAIL.h",
+			"settings":
+			{
+				"buffer_size": 1338,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_SMS.h",
+			"settings":
+			{
+				"buffer_size": 392,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/media/DEV/ROB_000/rover/CameraWebServer/CameraWebServer.ino",
+			"settings":
+			{
+				"buffer_size": 3687,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_ESPINFO.cpp",
+			"settings":
+			{
+				"buffer_size": 3236,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_SDCARD.cpp",
+			"settings":
+			{
+				"buffer_size": 6625,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_SMS.cpp",
+			"settings":
+			{
+				"buffer_size": 6686,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_WIFI.cpp",
+			"settings":
+			{
+				"buffer_size": 436,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_WIFI.h",
+			"settings":
+			{
+				"buffer_size": 340,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_CAMERA.h",
+			"settings":
+			{
+				"buffer_size": 370,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_MAIL.cpp",
+			"settings":
+			{
+				"buffer_size": 10554,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/media/DEV/ROB_000/rover/CameraWebServerSMS/CameraWebServerSMS.ino",
+			"settings":
+			{
+				"buffer_size": 8081,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "000_CAMERA.cpp",
+			"settings":
+			{
+				"buffer_size": 3192,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app_httpd.cpp",
+			"settings":
+			{
+				"buffer_size": 25007,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/media/DEV/ROB_000/rover/CameraWebServer_999"
+	],
+	"file_history":
+	[
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/000_SPIFFS.cpp",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/000_SPIFFS.h",
+		"/home/eric/.cache/.fr-dBc3DS/ESP_Mail_Client-1.1.7/examples/Send_HTML/Send_HTML.ino",
+		"/home/eric/.cache/.fr-3pNjGT/xreef-EMailSender-e68a0fe/EMailSender.cpp",
+		"/home/eric/.cache/.fr-CCYWkV/xreef-EMailSender-e68a0fe/examples/EMailSenderEsp32GMailSPIFFSAttachTest/EMailSenderEsp32GMailSPIFFSAttachTest.ino",
+		"/home/eric/.cache/.fr-uhPgJS/ESP_Mail_Client-1.1.7/examples/ESP32_Ethernet_Send_Text/ESP32_Ethernet_Send_Text.ino",
+		"/home/eric/.cache/.fr-TobZeS/ESP_Mail_Client-1.1.7/examples/Set_Flags/Set_Flags.ino",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/000_MAIL.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/libraries/SD/src/SD.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/libraries/SD_MMC/src/SD_MMC.cpp",
+		"/media/eric/0913-0927/000_SDCARD.h",
+		"/media/DEV/ROB_000/rover/CameraWebServer/CameraWebServer.ino",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/libraries/SPIFFS/src/SPIFFS.cpp",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/000_WIFI.h",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/000_WIFI.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/esp32-camera/driver/include/esp_camera.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32c3/include/esp_http_server/include/esp_http_server.h",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/app_httpd.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/libraries/ESP32/examples/Camera/CameraWebServer/CameraWebServer.ino",
+		"/media/DEV/ROB_000/rover/CameraWebServerMail/CameraWebServerMail.ino",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/camera_index.h",
+		"/media/DEV/ROB_000/rover/CameraWebServer_999/CameraWebServer_999.sublime-project",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/libraries/WiFiClientSecure/src/ssl_client.cpp.2.0.0-alpha1",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32s2/include/mbedtls/mbedtls/include/mbedtls/ssl.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32c3/include/mbedtls/mbedtls/include/mbedtls/ssl.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/mbedtls/mbedtls/include/mbedtls/ssl.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/mbedtls/mbedtls/include/mbedtls/asn1.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/mbedtls/mbedtls/include/mbedtls/x509.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/mbedtls/mbedtls/include/mbedtls/x509_crt.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32s2/include/esp-tls/private_include/esp_tls_mbedtls.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32c3/include/esp-tls/private_include/esp_tls_mbedtls.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/esp-tls/private_include/esp_tls_mbedtls.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32c3/include/mbedtls/mbedtls/include/mbedtls/config.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/2.0.0-alpha1/tools/sdk/esp32/include/esp-tls/esp_tls.h",
+		"/tmp/mozilla_eric0/ssl_client.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_UTL_SYS_BASIC/000_UTL_SYS_BASIC.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_UTL_SYS_BASIC/000_UTL_SYS_BASIC.h",
+		"/media/DEV/ROB_000/rover/libraries/000_TASKS/000_TASKS.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_TASKS/000_TASKS.h",
+		"/media/DEV/ROB_000/rover/libraries/000_EXCEPT/000_EXCEPT.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_EXCEPT/000_EXCEPT.h",
+		"/media/DEV/ROB_000/rover/CameraWebServer/app_httpd.cpp",
+		"/mnt/Z_DEV/@DEV_W/KAM_000/libraries/APP/TH_udpRover.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_WSOK/000_WSOK.h",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/AsyncEventSource.cpp",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/AsyncWebSocket.cpp",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/AsyncWebSocket.h",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/WebRequest.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.6/libraries/AsyncUDP/src/AsyncUDP.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_LOGS/000_LOGS.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_LOGS/000_LOGS.h",
+		"/media/DEV/ROB_000/rover/libraries/AsyncTCP-master/src/AsyncTCP.h",
+		"/media/DEV/ROB_000/rover/libraries/AsyncTCP-master/src/AsyncTCP.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_UDPL/000_UDPL.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_WSOK/000_WSOK.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_UDPL/000_UDPL.h",
+		"/media/DEV/ROB_000/rover/libraries/ESP_Mail_Client/src/wcs/esp32/esp_mail_ssl_client32.cpp",
+		"/media/DEV/ROB_000/rover/libraries/ESP_Mail_Client/src/wcs/esp32/ESP_Mail_HTTPClient32.cpp",
+		"/media/DEV/ROB_000/rover/libraries/ESP_Mail_Client/src/README.md",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.6/libraries/ESP32/examples/Camera/CameraWebServer/CameraWebServer.ino",
+		"/home/eric/Arduino/hardware/espressif/esp32/package/package_esp32_index.template.json",
+		"/home/eric/.arduino15/package_index.json",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov_000_WS3.hpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Mod_000_WS3.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Mod_000_WS3.h",
+		"/media/DEV/ROB_000/rover/libraries/000_WSCHK/000_WSCHK.cpp",
+		"/media/DEV/ROB_000/rover/libraries/00_LOG/000_LOG.cpp.queue",
+		"/media/DEV/ROB_000/rover/libraries/ArduinoJson/extras/tests/catch/catch.hpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Mod_Driver_000_WS3.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_SIGNAL_PROCESS/000_SIGNAL_PROCESS.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_WSFLOW/000_WSFLOW.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_WSCHK/000_WSCHK.h",
+		"/media/DEV/ROB_000/rover/libraries/000_DEBUG/000_DEBUG.h",
+		"/media/DEV/ROB_000/rover/libraries/000_DEBUG/000_DEBUG.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Sen_000_WS3(french).csv",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Mod_Jobgoal_000_WS3.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_Rover_webServer/000_Rover_webServer.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_FSTR/000_FSTR.h",
+		"/media/DEV/ROB_000/rover/libraries/000_FSTR/000_FSTR.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.6/libraries/AsyncUDP/src/AsyncUDP.h",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/StringArray.h",
+		"/media/DEV/ROB_000/rover/libraries/ESPAsyncWebServer-master/src/ESPAsyncWebServer.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/AsyncUDP/src/AsyncUDP.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/AsyncUDP/src/AsyncUDP.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_LOG/000_LOG.cpp.queue",
+		"/media/DEV/ROB_000/rover/libraries/000_I2C/000_I2C.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_MPU9250/000_MPU9250.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_WIFI/000_WIFI.cpp",
+		"/media/DEV/ROB_000/rover/libraries/Adafruit_Circuit_Playground/examples/mega_demo/VUMeterDemo.h",
+		"/media/DEV/ROB_000/rover/libraries/000_CONTEXT/000_CONTEXT.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_CONTEXT/000_CONTEXT.h",
+		"/media/DEV/ROB_000/rover/libraries/000_WIFI/000_WIFI.h",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/SET_000_WS3.cfg",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/pil-CfgJS(000_WS3).js",
+		"/media/DEV/ROB_000/rover/libraries/000_EEPROM/000_EEPROM.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_SIGNAL_PROCESS/000_SIGNAL_PROCESS.h",
+		"/media/DEV/ROB_000/rover/libraries/000_Rover_webServer/000_Rover_webServer.h",
+		"/media/DEV/ROB_000/rover/libraries/ArduinoJson/src/ArduinoJson/Strings/StdStringAdapter.hpp",
+		"/media/DEV/ROB_000/rover/libraries/000_I2C/000_I2C.h",
+		"/media/DEV/ROB_000/rover/libraries/000_WSFLOW/000_WSFLOW.h",
+		"/media/DEV/ROB_000/rover/libraries/000_TASK/000_TASK.h",
+		"/media/DEV/ROB_000/rover/libraries/000_TASK/000_TASK.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Udpl_000_WS3.h",
+		"/media/DEV/ROB_000/rover/libraries/000_KMDS/000_KMDS.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Logs_000_WS3.h",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Logs_000_WS3.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Udpl_000_WS3.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Kmds_000_WS3.h",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Kmds_000_WS3.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_MODULE/000_MODULE.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_MODULE/000_MODULE.h",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-Kmd_000_WS3.cpp",
+		"/media/DEV/ROB_000/setup/SET_000_WS3/rov-CfgHPP(000_WS3).hpp",
+		"/media/DEV/ROB_000/rover/AsyncUDPMulticastServer/AsyncUDPMulticastServer.ino",
+		"/media/DEV/ROB_000/rover/libraries/000_UDP/000_UDP.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_UDP/000_UDP.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/cores/esp32/IPAddress.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/cores/esp32/IPAddress.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/WiFi/src/WiFiAP.h",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/WiFi/keywords.txt",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/WiFi/src/WiFiGeneric.cpp",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5-rc7/libraries/AsyncUDP/examples/AsyncUDPServer/AsyncUDPServer.ino",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5/libraries/WiFi/examples/WiFiUDPClient/WiFiUDPClient.ino",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5/libraries/AsyncUDP/examples/AsyncUDPClient/AsyncUDPClient.ino",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5/libraries/AsyncUDP/examples/AsyncUDPServer/AsyncUDPServer.ino",
+		"/home/eric/.arduino15/packages/esp32/hardware/esp32/1.0.5/libraries/AsyncUDP/examples/AsyncUDPMulticastServer/AsyncUDPMulticastServer.ino",
+		"/media/DEV/ROB_000/rover/libraries/000_LOG/000_LOG.cpp",
+		"/media/DEV/ROB_000/rover/libraries/000_MPU9250/000_MPU9250.h"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 98.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"levels",
+			"spiffs",
+			"DOMAIN",
+			"LOGIN_PSWD",
+			"LOGIN_MAIL",
+			"PORT",
+			"LOGINMAIL",
+			"LOGINPSWD",
+			"AUTHPSWD",
+			"AUTHMAIL",
+			"return false",
+			"session",
+			"SMTP_HOST",
+			"smtp",
+			"Sending Email",
+			"readFile",
+			"listDir",
+			"SEND_MAIL",
+			"config",
+			"WiFiClientSecure",
+			"\\n\" ",
+			" \\\\",
+			"SPIFFS",
+			"face_id_init",
+			"FACE_ID_SAVE_NUMBER",
+			"PART_BOUNDARY",
+			"esp_camera.h",
+			"psramFound",
+			"include",
+			"index.html.gz",
+			"psramFound",
+			"index.html.gz",
+			"app_httpd.cpp",
+			"app_httpd",
+			"psramFound",
+			"app_httpd",
+			"CAMERA_MODEL_ESP_EYE",
+			"setDebugOutput",
+			"mbedtls_ssl_get_verify_result",
+			"mbedtls_x509_crt_verify_info",
+			"#define MBEDTLS_RSA_C",
+			"MBEDTLS_RSA_C",
+			"esp_mail",
+			"mbedtls_ssl_conf_authmode",
+			"mbedtls_x509_crt"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"depth",
+			"SMTP_USER_DOMAIN",
+			"SMTP_PSWD",
+			"SMTP_LOGIN",
+			"SMTP_PORT",
+			"LOGIN_MAIL",
+			"LOGIN_PSWD",
+			"LOGINPSWD",
+			"LOGINMAIL",
+			"\\n\""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "CameraWebServer_999.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2570,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1708,
+								1708
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 495.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "000_SDCARD.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 947,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								751,
+								751
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "000_ESPINFO.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 314,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								232,
+								232
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4053,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										146,
+										152
+									],
+									[
+										376,
+										382
+									],
+									[
+										425,
+										431
+									],
+									[
+										465,
+										471
+									],
+									[
+										505,
+										511
+									],
+									[
+										546,
+										552
+									],
+									[
+										585,
+										591
+									],
+									[
+										657,
+										663
+									],
+									[
+										1047,
+										1053
+									],
+									[
+										1169,
+										1175
+									],
+									[
+										1331,
+										1337
+									],
+									[
+										1358,
+										1364
+									],
+									[
+										1545,
+										1551
+									],
+									[
+										1567,
+										1573
+									],
+									[
+										1612,
+										1618
+									],
+									[
+										1748,
+										1754
+									],
+									[
+										1778,
+										1784
+									],
+									[
+										2000,
+										2006
+									],
+									[
+										2257,
+										2263
+									],
+									[
+										2273,
+										2279
+									],
+									[
+										2451,
+										2457
+									],
+									[
+										2658,
+										2664
+									],
+									[
+										2683,
+										2689
+									],
+									[
+										2732,
+										2738
+									],
+									[
+										2792,
+										2798
+									],
+									[
+										2855,
+										2861
+									],
+									[
+										2909,
+										2915
+									],
+									[
+										2949,
+										2955
+									],
+									[
+										2991,
+										2997
+									],
+									[
+										3035,
+										3041
+									],
+									[
+										3076,
+										3082
+									],
+									[
+										3155,
+										3161
+									],
+									[
+										3575,
+										3581
+									],
+									[
+										3667,
+										3673
+									],
+									[
+										3779,
+										3785
+									],
+									[
+										3865,
+										3871
+									],
+									[
+										3976,
+										3982
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								428,
+								428
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/media/DEV/ROB_000/rover/CameraWebServerMail/CameraWebServerMail.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13664,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11543,
+								11543
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5400.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/media/DEV/ROB_000/rover/CameraWebServer/app_httpd.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 24013,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								21891,
+								21891
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8530.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "000_MAIL.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1338,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								795,
+								795
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "000_SMS.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 392,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								391,
+								391
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/media/DEV/ROB_000/rover/CameraWebServer/CameraWebServer.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3687,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								44,
+								44
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 9,
+					"file": "000_ESPINFO.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3236,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								698,
+								698
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "000_SDCARD.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6625,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1244,
+								1244
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "000_SMS.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6686,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3921,
+								3921
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 855.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "000_WIFI.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 436,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								23,
+								23
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "000_WIFI.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 340,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								133,
+								133
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "000_SMS.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6686,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2957,
+								2957
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 555.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "000_CAMERA.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 370,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								286,
+								286
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "000_MAIL.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10554,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9388,
+								9388
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1952.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "/media/DEV/ROB_000/rover/CameraWebServerSMS/CameraWebServerSMS.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8081,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1530.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/media/DEV/ROB_000/rover/CameraWebServerMail/CameraWebServerMail.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13664,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1496,
+								1496
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 180.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "000_CAMERA.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3192,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								926,
+								926
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "app_httpd.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25007,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22702,
+								22702
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8351.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 36.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.483280610065,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "CameraWebServer_999.sublime-project",
+	"replace":
+	{
+		"height": 68.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 307.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
