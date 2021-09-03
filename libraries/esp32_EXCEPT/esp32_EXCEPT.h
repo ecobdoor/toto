@@ -1,7 +1,9 @@
 #ifndef __esp32_EXCEPT__
 #define __esp32_EXCEPT__
 /** @file */
+#include "Arduino.h"
 #include "esp32_SYS_basic.h"
+#include <esp_heap_caps.h>
 #include <exception>
 ///////////////////////////////////////////////////////////////////////
 /**
@@ -29,7 +31,8 @@ public:
 class EXCEPT: public exception {
 private:
 	Scratch *_scratch = nullptr;
-	public:
+
+public:
 	EXCEPT(Scratch *SCRATCH) throw () :
 		_scratch(SCRATCH){
 	}
@@ -43,6 +46,7 @@ private:
 	void fixException(const char *FUNCTION, const int LINE, const char *FILE) const throw (){
 		_scratch->fixError(FUNCTION, LINE, FILE);
 	}
+
 	/*
 	 erLVL_t getLevel() const throw () {
 	 return _scratch->m_level;
@@ -53,9 +57,23 @@ private:
 	 */
 	virtual ~EXCEPT() throw (){
 	}
+	e_STR errCod() const; // !!! const because of c++ passing 'const EXCEPT' as 'this' argument discards qualifiers
 };
+inline e_STR EXCEPT::errCod() const{
+	return _scratch->m_number;
+}
 Scratch* rtnThrow(const e_STR STR_COD, const char *FUNCTION, const int LINE, const char *FILE, ...);
 //void Throw(const e_STR STR_COD ,const  char * FUNCTION,const int LINE,const  char * FILE,...);
+/**
+ * @fn ThrowErr(TaskHandle_t *TSKHDL, const char *FUNCTION, const int LINE, const char *FILE, const e_STR STR_COD, ...)
+ * @brief Creates a new @ref Scratch & throw @ref EXCEPT
+ *
+ * @param TSKHDL Task (or function) handler
+ * @param FUNCTION where throw was called
+ * @param LINE where throw was called
+ * @param FILE where throw was called
+ * @param STR_COD string code
+ */
 void ThrowErr(TaskHandle_t *TSKHDL, const char *FUNCTION, const int LINE, const char *FILE,
 	const e_STR STR_COD, ...);
 /*
@@ -68,6 +86,11 @@ void ThrowErr(TaskHandle_t *TSKHDL, const char *FUNCTION, const int LINE, const 
 	do { \
 		Throw(STR_COD,__FUNCTION__, __LINE__,__FILE__,## __VA_ARGS__); \
 	}while(0)
+ */
+/**
+ * @fn #define THROWERR(STR_COD,...)
+ * @brief call @ref ThrowErr (...)
+ *
  */
 #define THROWERR(STR_COD,...) \
 	do { \
@@ -88,14 +111,27 @@ void ThrowErr(TaskHandle_t *TSKHDL, const char *FUNCTION, const int LINE, const 
  * Following m_level rover is reset, or error display until cnt==lvl
  *
  */
-void FIX_ERRORS();
 #define FIX_ERROR() \
 	do{ \
-		Serial.printf("\nFIX_ERROR %s %i %s ",__FUNCTION__, __LINE__,__FILE__); \
-		e.fixException(__FUNCTION__, __LINE__,__FILE__); \
+		if(!On_Error(e.errCod())) { \
+			Serial.printf("\nFIX_ERROR %s %i %s ",__FUNCTION__, __LINE__,__FILE__); \
+			e.fixException(__FUNCTION__, __LINE__,__FILE__); \
+		} \
 	}while(0)
-char* charAlloc(const size_t SIZE);
-inline void charFree(char *BUFFER){
+/**
+ * @fn char* allocBuf(const size_t SIZE, int16_t *CNT = nullptr, const char *FUNCTION = __FUNCTION__);
+ * @brief Allocateds a buffer on heap & set CNT buffer pointer to 0 (if defined)
+ *
+ * For MALLOC_CAP_8BIT, MALLOC_CAP_32BIT, MALLOC_CAP_DMA,MALLOC_CAP_IRAM_8BIT... CF.
+ * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/mem_alloc.html
+ *
+ * @param SIZE of buffer to be allocated
+ * @param CNT index in buffer to be allocated. If (CNT) set to 0 else unchanged
+ * @param FUNCTION calling function
+ * @return buffer address or nullptr if no place in heap
+ */
+char* allocBuf(const size_t SIZE, int16_t *CNT = nullptr);
+inline void freeBuf(char *BUFFER){
 	free((void*)BUFFER);
 	BUFFER = nullptr;
 }

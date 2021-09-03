@@ -22,15 +22,15 @@ void dumpFlow(t_map_FLOW & MAP, const String TITLE);
 #endif
 ///////////////////////////////////////////////////////////////////////
 /**
- * \class Flow
+ * \class c_myFlow
  */
-class Flow: public Core {
+class c_myFlow: public Core {
 private:
 	t_map_FLOW QRwait;
 	t_map_FLOW QRlost;
 	public:
 	int cntQUERIES = 0;
-	Flow(const String NAME, int8_t *DBGMAX);
+	c_myFlow(const String NAME, int8_t *DBGMAX);
 	void clear();
 	int tag(const uint64_t TMS, const String PROTOCOL);
 	void ack(const uint32_t TIK);

@@ -195,6 +195,7 @@ static void _async_service_task(void *pvParameters){
             }
 #endif
             _handle_async_event(packet);
+            Serial.print("/");
 #if CONFIG_ASYNC_TCP_USE_WDT
             if(esp_task_wdt_delete(NULL) != ESP_OK){
                 log_e("Failed to remove loop task from WDT");

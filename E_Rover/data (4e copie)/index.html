@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>TEST HTTP SERVER</title>
+	<style type="text/css">
+		body {
+			background: red;
+			font-family: verdana;
+			color: #444;
+			padding: 2px;
+		}
+
+		h1 {
+			font-size: 20px;
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			text-align: center;
+		}
+
+		p {
+			font-size: 12px;
+			text-align: left;
+		}
+
+		.buttonsSize {
+			height: 30px;
+			width: 200px;
+		}
+	</style>
+	<script type="text/javascript">
+		var progressTimer;
+		function progressListener() {
+			console.info(this);
+			document.getElementById("divProgress").innerHTML = this.responseText;
+		};
+		function onProgress() {
+			console.info("onProgress");
+			var xhttp = new XMLHttpRequest();
+			xhttp.onload = progressListener;
+			xhttp.open("GET", "progress", true);
+			xhttp.timeout = 500; // durée en millisecondes
+			xhttp.ontimeout = function (e) {
+				var deja = document.getElementById("divProgress").innerHTML
+				document.getElementById("divProgress").innerHTML += ".";
+			};
+			xhttp.send();
+		};
+		function GetFileInfo(ID) {
+			var fileInput = document.getElementById(ID);
+			var message = "<table>";
+			if ('files' in fileInput) {
+				if (fileInput.files.length == 0) {
+					message = "Please browse for one or more files.";
+				} else {
+					for (var i = 0; i < fileInput.files.length; i++) {
+						message += "<tr><td>" + (i + 1) + "</td>";
+						var file = fileInput.files[i];
+						var ts = new Date(file.lastModified);
+						message += "<td>" + ts.toLocaleString() + "</td>";
+						message += "<td>" + file.name + "</td>";
+						message += "<td><p style='text-align:right'>" + file.size
+							+ "</p></td>";
+						message += "<td>" + file.type + "</td></tr>";
+					}
+					var buttonSubmit = document.getElementById(ID + "_submit");
+					buttonSubmit.disabled = false;
+					progressTimer = setInterval(onProgress, 400);
+				}
+			} else {
+				if (fileInput.value == "") {
+					message += "Please browse for one or more files.";
+					message += "<br />Use the Control or Shift key for multiple selection.";
+				} else {
+					message += "Your browser doesn't support the files property!";
+					message += "<br />The path of the selected file: "
+						+ fileInput.value;
+				}
+			}
+			message += "</table>";
+			var info = document.getElementById("info");
+			info.innerHTML = message;
+		}
+	</script>
+</head>
+
+<body>
+	<h1>AdMin ROVER</h1>
+	<p>
+	<h2>
+		<!-- Template processor-->
+		%UPDATE_STATUS%
+	</h2>
+	</p>
+	<a href="/update">Update</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href="/upload">Upload</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href="?p=/pil.html">ROVER pilot</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href="?p=/pil.html&wifi=bdoor">BDOOR pilot</a>
+	<br>
+	<a href="?p=/manette.html">manette</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href="jsondata">json data</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href="student">student</a>
+	&nbsp;&nbsp;&nbsp;
+	<a href=?p=/tst.html>Test</a>
+	<br>
+	<input type="button" class='buttonsSize' onclick="location.href='/listFiles';" value="DOWNLOAD a SPIFFS file" />
+	<button onclick="onProgress()">onProgress</button>
+	<form method='POST' action='/doUpdate' enctype='multipart/form-data'>
+		<input type='submit' disabled id="Upgrade_submit" class='buttonsSize' value='UPGRADE APPLICATION'
+			title='Mise à jour du programme Esp32'>
+		<input type='file' id="Upgrade" name='UPDATE APPLICATION' accept='.bin' onchange="GetFileInfo (this.id)">
+	</form>
+	<form method='POST' action='/doUpload' enctype='multipart/form-data'>
+		<input type='submit' disabled id="Single_submit" class='buttonsSize' value='UPLOAD SINGLE FILE'
+			title="Upload single File"> <input type='file' id="Single" name='zzz' onchange="GetFileInfo (this.id)">
+	</form>
+	<form method='POST' action='/doUpload' enctype='multipart/form-data'>
+		<input type='submit' disabled id="Multi_submit" class='buttonsSize' value='UPLOAD MULTI FILES'
+			title="Upload multi Files"> <input type='file' id="Multi" name="data"
+			data-multiple-caption="{count} files selected" multiple onchange="GetFileInfo (this.id)">
+	</form>
+	===============================================
+	<div id='divProgress'>divProgress</div>
+	<div id='info'>info</div>
+	===============================================
+</body>
+
+</html>

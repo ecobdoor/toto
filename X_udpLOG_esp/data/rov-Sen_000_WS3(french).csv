@@ -1,0 +1,83 @@
+NO_ERROR______,//;0;Pas d'erreur (?)
+ESP_RESTART,//;0;#### ESP Restarting...
+JCT_ERROR,//;1;#### ERROR on PWSX (%s %i %s)!
+DSP_ERR_SPLIT,//;1;#### sigDsp::Begin ERROR splitting \""""""""%s\"""""""""""""""
+DSP_ERR_CMD,//;1;#### sigDsp::Begin ERROR commande inconnue \""""""""%s\"""""""""""""""
+JCT_NOT_CONNECTED,//;1;#### Junction not connected (%s)!
+ERR_SND_TIMOUT,//;1;#### ERROR on PWSX canSend (wait for %i ms)!
+ERR_SND_NOTCONNECT,//;1;#### ERROR on PWSX not connected %s!
+ERR_SND_NOTIFY,//;1;#### TIMEOUT on NOTIFY SENDER (%i ms)
+STR_SIZE,//;0; occupying %i/%i bytes (labels %i/%i bytes).
+I2C_,//;0;==== I2C MASTER %s
+I2C_CLOCK,//;0;	I²C clock frequency %i Hz.
+I2C_MISSING,//;1;I²C resources missing (%i found)!
+WS_ERR_CANTSEND,//;1;WS server can’t send %s
+JSON_ERR_DESERIALIZE,//;1;JSON deserializing '%s'
+KERN_,//;0;==== GLOBAL SYSTEM CHECKING %s
+KERN_CPP,//;0;'%+17i' : C++ versioning
+KERN_ARDUINOJSON_USE_LONG_LONG,//;0;'%+17i' : ARDUINOJSON_USE_LONG_LONG
+KERN_sizeof_t_jsonDoc,//;0;'%+17i' : sizeof(t_jsonDoc)
+KERN_WS_MAX_QUEUED_MESSAGES,//;0;'%+17i' : WS_MAX_QUEUED_MESSAGES
+KERN_configUSE_TRACE_FACILITY,//;0;'%+17i' : configUSE_TRACE_FACILITY
+KERN_configUSE_STATS_FORMATTING_FUNCTIONS,//;0;'%+17i' : configUSE_STATS_FORMATTING_FUNCTIONS
+KERN_INCLUDE_vTaskDelay,//;0;'%+17i' : INCLUDE_vTaskDelay
+KERN_portTICK_PERIOD_MS,//;0;'%+17i' : portTICK_PERIOD_MS ms
+KERN_ESP_TASKS,//;0;	Checking esp_task.h to set the APP tasks priorities:
+KERN_ESP_TASK_PRIO_MAX,//;0;'%+17i' : ESP_TASK_PRIO_MAX
+KERN_ESP_TASK_TIMER_PRIO,//;0;'%+17i' : ESP_TASK_TIMER_PRIO timer (stack %i bytes)
+KERN_ESP_TASKD_EVENT_PRIOevent,//;0;'%+17i' : ESP_TASKD_EVENT_PRIOevent (stack %i bytes)
+KERN_ESP_TASK_TCPIP_PRIO,//;0;'%+17i' : ESP_TASK_TCPIP_PRIO tcpip (stack %i bytes)
+KERN_ESP_TASK_MAIN_PRIO,//;0;'%+17i' : ESP_TASK_MAIN_PRIO main   (stack %i bytes)
+WIFI_MAC,//;0;'%17s' : MAC address
+WIFI_POWER,//;0;'%17i' : Wifi AP power
+WIFI_APIP,//;0;'%17s' : Access Point IP
+WIFI_CONNECTING,//;0;	Connecting to WiFi...
+WIFI_LOCALIP,//;0;'%17s' : local IP
+WIFI_ATT_DB,//;0;'%17i' : attenuation (dB)
+EEPROM_,//;0;==== EEPROM CONTEXT CHECKING %s
+EEPROM_FAIL,//;0;	%s FAILS to begin
+EEPROM_OK,//;0;	%s OK at begining
+EEPROM_OK_SAVE,//;0;	%s saved on %s (%llu).
+EEPROM_OK_LOAD,//;0;	%s loaded on %s (%llu).
+PINS_LED,//;0;==== PINS & LED %s
+PINS_ISRIMU,//;0;	Pin %2i (INPUT_PULLDOWN) IMU interrupt rising up
+FIFO_OVERFLOW,//;1;Queue overflow tik(%i) µTS(%llu)
+PINS_OUTTEST,//;0;	Pin %2i (Board blue led) ON during wave test of output pins
+SOCKETS_,//;0;==== SOCKETS %s
+PID_HEAD,//;0;----TMS------  I * +-----S--error--D-----+-----S--integ--D-----+-----S--deriv--D-----+-----S---out---D-----+-MSG----
+PID_FOOT,//;0;-------------------+---------------------+---------------------+---------------------+---------------------+--------
+DISP_NOTMAPYET,//;1;KMD dispatchers not mapped yet
+IDLE_TIMEOUT,//;1;wait for idle time out
+CONDITION_TIMEOUT,//;1;condition time out
+SRV_CANT_PASSKMD,//;1;server can't pass a command
+CLI_CANT_WAITKMD,//;1;client can't wait a command
+JCT_TYPE_UNKNOWN,//;1;junction %i type unknown
+JCT_RESET_BROKEN,//;1;junction reseting broken
+JCT_AVAILABLE_TIMEOUT,//;1;junction available timeout
+JCT_ACKSRV_ERROR,//;1;server acknowledge error
+JCT_ACKCLI_ERROR,//;1;client acknowledge error
+JCT_RESET_TEST,//;1;testing exception management
+KMD_FORBIDDEN,//;1;v_waitKmd unexpected command
+UID_FORBIDDEN,//;1;v_waitKmd unexpected UID
+KMD_FORMAT_ERR,//;1;KMD packet length unexpected
+PAK_ID_READ_ERROR,//;1;packet ID read error
+PAK_ID_WRITE_ERROR,//;1;packet ID write error
+CHR_READ_TIMEOUT,//;1;timeout of char reception
+BUF_WRITE_NOCHAR,//;1;no buffer char sent
+BUF_WRITE_SIZE_ERR,//;1;missing char when buffer sent
+MAT_SIZE_ERR,//;1;no match size on read Mat
+MAT_PACKET_ERR,//;1;packet error on read Mat
+MAT_ACK_ERR,//;1;acknowledge error on read Mat
+MAT_NULLPTR,//;1;Mat address null pointer
+ARG_NULLPTR,//;1;Parameters null pointer
+SOK_SET_RCV_TIMOUT,//;0;setting receive timeout
+SOK_SET_RCV_BUFSIZ,//;0;setting receiver buffer size
+SOK_SET_SND_BUFSIZ,//;0;setting sender buffer size
+_EAI_SOCKTYPE,//;1;socket type not recognized
+BAD_ALLOC,//;1;Bad alloc %p bytes:%i>max:%i>free:%i>size:%i (min:%i)
+FATAL_ERR_EXAMPLE,//;1;my fatal error example
+____LINE_40_MINUS____,//;0;----------------------------------------
+____LINE_40_EQUAL____,//;0;'=======================================
+TEST_FATAL,//;1;Exemple d’erreur fatale
+TEST_INFO,//;0;Exemple d’informations
+TEST_RECOV,//;1;Exemple d’erreur récupérable

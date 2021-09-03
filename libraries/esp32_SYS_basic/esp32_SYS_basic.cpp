@@ -1,66 +1,52 @@
 #include <esp32_SYS_basic.h>
+#include <sstream>
 #include <esp32_DEBUG.h>
 #include <vector>
 //#include "FreeRTOS.h"
 #include <ctime>
+#include "esp32_GOODIES.h"
 //#include <string.h>
 using namespace std;
-const char blackNum[10][4] = {
-	"\xE2\x97\x89",
-	"\xe2\x9E\x8A",
-	"\xe2\x9E\x8B",
-	"\xe2\x9E\x8C",
-	"\xe2\x9E\x8D",
-	"\xe2\x9E\x8E",
-	"\xe2\x9E\x8F",
-	"\xe2\x9E\x90",
-	"\xe2\x9E\x91",
-	"\xe2\x9E\x92",
-};
-const char whiteNum[10][4] = {
-	"\xE2\x93\xAA",
-	"\xe2\x9E\x80",
-	"\xe2\x9E\x81",
-	"\xe2\x9E\x82",
-	"\xe2\x9E\x83",
-	"\xe2\x9E\x84",
-	"\xe2\x9E\x85",
-	"\xe2\x9E\x86",
-	"\xe2\x9E\x87",
-	"\xe2\x9E\x88",
-};
-/**
- * @fn VSPRINTF_BUFFER(const int8_t LVL, const char *FORMAT,
- va_list *ARGS, int16_t SIZE, int16_t &CNT, char *BUFFER)
- * @brief Fills a char BUFFER with an enhanced printf output of va_list ARGS
- * @param LVL debug or log proposed level to output if accepted
- * @param FORMAT as for printf
- * @param ARGS arguments lists of values to output following FORMAT
- * @param SIZE or BUFFER
- * @param CNT position of output in buffer
- * @param BUFFER char[SIZE]
+//	http://www.alanwood.net/unicode/enclosed_alphanumerics.html
+const char blackNum[10][4] = {/*"⓿"*/"⓿", "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "➒" };
+/*
+blackNum[0][0] = 0xe2;
+blackNum[0][1] = 0x93;
+blackNum[0][2] = 0xbf;
+blackNum[0][3] = '\0';
+*/
+const char whiteNum[10][4] = { "⓪", "➀", "➁", "➂", "➃", "➄", "➅", "➆", "➇", "➈" };
+/*
+ const char upperAlpha[26][4] = {"Ⓐ","Ⓑ","Ⓒ","Ⓓ","Ⓔ","Ⓕ","Ⓖ","Ⓗ","Ⓘ","Ⓙ","Ⓚ","Ⓛ","Ⓜ","Ⓝ","Ⓞ","Ⓟ","Ⓠ","Ⓡ","Ⓢ","Ⓣ","Ⓤ","Ⓥ","Ⓦ","Ⓧ","Ⓨ","Ⓩ"};
+ const char lowerAlpha[26][4] = {"⒜","⒝","⒞","⒟","⒠","⒡","⒢","⒣","⒤","⒥","⒦","⒧","⒨","⒩","⒪","⒫","⒬","⒭","⒮","⒯","⒰","⒱","⒲","⒳","⒴","⒵"};
  */
-void VSPRINTF_BUFFER(const int8_t LVL, const char *FORMAT,
-	va_list *ARGS, int16_t SIZE, int16_t &CNT, char *BUFFER){
-	VSPrintF(SIZE, CNT, BUFFER, FORMAT, ARGS);
-	if (true) {
-		char buff[48];
-		sprintf(buff, "\n%i:", LVL);
-//		sprintf(buff, "\n%-*i:",4*LVL, LVL); // with tabulation
-		std::string tab(buff);
-		size_t lenNewocc = tab.length();
-		std::string CHN(BUFFER);
-		size_t start = 0;
-		size_t pos = CHN.find("\n", start);
-		while (pos != string::npos) {
-			CHN.replace(pos, 1, tab);
-			start = pos + lenNewocc;
-			pos = CHN.find("\n", start);
-		}
-		strcpy(BUFFER, CHN.c_str());
-		CNT = CHN.length();
-	}
-}
+/*
+ const char blackNum[10][4] = {
+ "\xE2\x97\x89",
+ "\xe2\x9E\x8A",
+ "\xe2\x9E\x8B",
+ "\xe2\x9E\x8C",
+ "\xe2\x9E\x8D",
+ "\xe2\x9E\x8E",
+ "\xe2\x9E\x8F",
+ "\xe2\x9E\x90",
+ "\xe2\x9E\x91",
+ "\xe2\x9E\x92",
+ };
+ const char whiteNum[10][4] = {
+ "\xE2\x93\xAA",
+ "\xe2\x9E\x80",
+ "\xe2\x9E\x81",
+ "\xe2\x9E\x82",
+ "\xe2\x9E\x83",
+ "\xe2\x9E\x84",
+ "\xe2\x9E\x85",
+ "\xe2\x9E\x86",
+ "\xe2\x9E\x87",
+ "\xe2\x9E\x88",
+ };
+ */
+//---------------------------------------------------------------------
 uint64_t UI64S(const String CHN){
 	uint64_t res = 0;
 	int deb;
@@ -76,9 +62,32 @@ uint64_t UI64S(const String CHN){
 	}
 	return res;
 }
+//---------------------------------------------------------------------
+uint32_t UI32S(const String CHN){
+	uint32_t res = 0;
+	int deb;
+	if (CHN[0] == '+')
+		deb = 1;
+	else
+		deb = 0;
+	//_SERIAL_0("%s:", CHN.c_str());
+	for (int i = deb; i < CHN.length(); i++) {
+		//int x=CHN[i]-48;
+		res = 10 * res + (uint8_t)(CHN[i] - 48);
+		//_SERIAL_0("%i-%lli>",x, res);
+	}
+	return res;
+}
+/*
+ *  18 446744073 709551615 max value !!!
+ *  18 446744073 709461...
+ * BBB
+ */
 String SUI64(const uint64_t VAL){
-	return ((VAL > 1000000L) ? String((uint32_t)(VAL / 1000000L)) : "")
-		+ String((uint32_t)(VAL % 1000000L));
+	std::ostringstream ss;
+	ss << VAL;
+	return String(ss.str().c_str());
+//    return ss.str(); // for std::string !!
 }
 uint64_t tmsOffset = 0;
 uint64_t milli_TS(){
@@ -142,7 +151,7 @@ String inString(const char *PROMPT){
 		while (USE_SERIAL.available()) {
 			BUF[cnt] = USE_SERIAL.read();
 			cnt++;
-			assert(cnt < 64);
+			ASSERT(cnt < 64);
 			delay(1); //... to reveive full line kmd when prompt
 		}
 		// clean end of string
@@ -177,8 +186,8 @@ float Float(const char *str){
 void SplitOnLast(const std::string str, std::string &first, std::string &second,
 	const char *charPatterns){
 	std::size_t found = str.find_last_of(charPatterns);
-	first = str.substr(0, found);
 	second = str.substr(found + 1);
+	first = str.substr(0, found);
 }
 char splitString(vector<String> &ARGS, const String &CHN, const char *SEPARATORS, const bool debug){
 	ARGS.clear();
@@ -204,27 +213,8 @@ char splitString(vector<String> &ARGS, const String &CHN, const char *SEPARATORS
 	}
 	return ARGS.size() == 0 ? '\0' : ARGS[0][0];
 }
-void SPrintF(const uint16_t SIZE, int16_t &CNT, char *BUFFER, const char *FORMAT, ...){
-	va_list args;
-	va_start(args, FORMAT);
-	VSPrintF(SIZE, CNT, BUFFER, FORMAT, &args);
-	va_end(args);
-}
-void VSPrintF(const uint16_t SIZE, int16_t &CNT, char *BUFFER, const char *FORMAT, va_list *ARGS){
-	int16_t cnt = vsnprintf(BUFFER + CNT, SIZE - CNT, FORMAT, *ARGS);
-	assert(cnt >= 0);
-	//_SERIAL_0("{%i}",CNT );Serial.flush();
-	assert((cnt - 1) < (SIZE - CNT));
-	CNT += cnt;
-}
 Core::Core(const char *classType, int8_t *dbgLvlMax) :
 	class_Type(classType), this_DebugLVL(*dbgLvlMax){
-}
-void Core::set_dbgLVL(const int8_t LVL){
-	this_DebugLVL = LVL;
-}
-int8_t Core::get_dbgLVL(){
-	return this_DebugLVL;
 }
 /**
  * @fn String datim(uint64_t TMS, const int SHIFTHOURS = 1)

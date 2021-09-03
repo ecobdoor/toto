@@ -12,9 +12,12 @@
  */
 class socketUDPclient: public socketUDP {
 private:
-	//struct sockaddr_in _servaddr;
+	//socketUDP &udpSocket;
 public:
 	socketUDPclient(const std::string NAME, const string IP, const int PORT,
-			uint16_t TIMEOUT, const int dbgLvlMax);
+		uint16_t TIMEOUT, const int dbgLvlMax);
+	~socketUDPclient(){
+		//printf("\n DESTROY socketUDPclient");
+	}
 };
 #endif

@@ -25,7 +25,7 @@ socketWSclient::socketWSclient(const std::string NAME, const string IP,
 	_servaddr.sin_port = htons(PORT);
 	_servaddr.sin_addr.s_addr = inet_addr(IP.c_str()); //INADDR_ANY;
 	*/
-//	__DEBUG_(4, "~", " :%s connect to %s:%i\n", _name.c_str(), IP.c_str(),PORT);
+//	__DEBUG _(4, "~", " :%s connect to %s:%i\n", _name.c_str(), IP.c_str(),PORT);
 }
 /*
 void socketUDPclient::clear() {

@@ -1,5 +1,7 @@
 #include <esp32_LOGS.h>
+#include "esp32_SPRINT.h"
 #include <esp32_FSTR.h>
+#include "esp32_GOODIES.h"
 
 ///////////////////////////////////////////////////////////////////////
 /*
@@ -17,6 +19,7 @@ Scratch* rtnThrow(const e_STR STR_COD, const char *FUNCTION, const int LINE, con
 	va_end(args);
 	return rtn;
 }
+//---------------------------------------------------------------------
 void ThrowErr(TaskHandle_t *TSKHDL, const char *FUNCTION, const int LINE, const char *FILE,
 	const e_STR STR_COD, ...){
 	s_tskInfo_X *ti = findTask(TSKHDL);
@@ -73,7 +76,7 @@ Scratch::Scratch(const e_STR ERRCOD, const char *FUNCTION, const int LINE, const
  */
 void Scratch::fixError(const char *FUNCTION, const int LINE, const char *FILE){
 	if (m_level == _FATAL)
-		c_linkISR::detach_ISR(); // out side of throw !!!!!
+		DETACH(P_imuISR_); // out side of throw !!!!!
 	int16_t cnt = strlen(buffer);
 	SPrintF(sizeof(buffer), cnt, buffer, "\n\tERROR caught on `%s`  at line %i of %s this=(%p)",
 		FUNCTION, LINE, FILE, this);
@@ -81,39 +84,31 @@ void Scratch::fixError(const char *FUNCTION, const int LINE, const char *FILE){
 	Serial.printf("\n%s", dump_TASKS().c_str());
 	Serial.printf("\n##############################################");
 	if (m_level == _FATAL) {
-		char x = inKey("\nFATAL ERROR. Wait for hit key (Enter=restart, Space=continue)...");
-		Serial.printf("\nINKEY ='%c'", x);
-		if (x == '\n')
-			ESP.restart();
-		/*vTaskSuspendAll();*/
-		while (true) {
-			NOP();
-		}
+		char x;
+		do {
+			x = inKey("\nFATAL ERROR. Wait for hit key (Enter=restart, Space=continue)...");
+			Serial.printf(" INKEY ='%c' %i", x, x);
+			if (x == '\n')
+				ESP.restart();
+			/*vTaskSuspendAll();*/
+			//while (true) {				NOP();			}
+		} while ((x != '\n') && (x != ' '));
 	}
-}
-void FIX_ERRORS(){
-	for (int e = 0; e < static_cast<int>(e_tasks::END); e++) {
-		s_tskInfo_X &ti = tskMON[static_cast<int>(e)];
-		if (ti.scratch != nullptr) {
-			if (ti.scratch->m_level == Scratch::_FATAL)
-				c_linkISR::detach_ISR(); // out side of throw !!!!!
-		}
-	}
-
 }
 //---------------------------------------------------------------------
-char* charAlloc(const size_t SIZE){
+char* allocBuf(const size_t SIZE,  int16_t *CNT){
 	void *ptr;
+//	_SERIAL_0("\nallocBuf %4i/%6i \t %s",SIZE,heap_caps_get_largest_free_block(MALLOC_CAP_8BIT), FUNCTION);
 	try {
 		ptr = malloc(SIZE);
+		if (CNT)
+			*CNT = 0;
 		if (!ptr) {
-			_SERIAL_0(Lang.CST(BAD_ALLOC), ptr, SIZE, ESP.getMaxAllocHeap(),
-				ESP.getFreeHeap(), ESP.getHeapSize(), ESP.getMinFreeHeap());
-			THROWERR(BAD_ALLOC, ptr, SIZE, ESP.getMaxAllocHeap(),
-				ESP.getFreeHeap(), ESP.getHeapSize(), ESP.getMinFreeHeap());
+			_SERIAL_0(Lang.CST(BAD_ALLOC), SIZE, heapState().c_str());
+			THROWERR(BAD_ALLOC, SIZE, heapState().c_str());
 		}
+		*(char*)ptr=0; // !!! to avoid bugs
 	} catch (EXCEPT const &e) {
-//		FIX_ERROR();
 		THROW_UP();
 	}
 	return (char*)ptr;

@@ -1,0 +1,639 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta charset="UTF-8" />
+	<title>PILOT-BASE-ROVER 0.00</title>
+	<link rel="stylesheet" type="text/css" href="node_pil.css" />
+	<style type="text/css"></style>
+	<script type="text/javascript" src="node_pil.js"></script>
+</head>
+<body>
+	<!-- 
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+
+					DEFAULT POSISIONNING
+
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+	-->
+	<div>
+		<div
+			style="position: absolute;top:var(--r0-top);left:var(--c0-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R0C0</div>
+		<div
+			style="position: absolute;top:var(--r0-top);left:var(--c1-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R0C1</div>
+		<div
+			style="position: absolute;top:var(--r0-top);left:var(--c2-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R0C2</div>
+		<div
+			style="position: absolute;top:var(--r0-top);left:var(--c3-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R0C3</div>
+
+
+		<div
+			style="position: absolute;top:var(--r1-top);left:var(--c0-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R1C0</div>
+		<div
+			style="position: absolute;top:var(--r1-top);left:var(--c1-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R1C1</div>
+		<div
+			style="position: absolute;top:var(--r1-top);left:var(--c2-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R1C2</div>
+		<div
+			style="position: absolute;top:var(--r1-top);left:var(--c3-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R1C3</div>
+
+		<div
+			style="position: absolute;top:var(--r2-top);left:var(--c0-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R2C0</div>
+		<div
+			style="position: absolute;top:var(--r2-top);left:var(--c1-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R2C1</div>
+		<div
+			style="position: absolute;top:var(--r2-top);left:var(--c2-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R2C2</div>
+		<div
+			style="position: absolute;top:var(--r2-top);left:var(--c3-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R2C3</div>
+
+
+		<div
+			style="position: absolute;top:var(--r3-top);left:var(--c0-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R3C0</div>
+		<div
+			style="position: absolute;top:var(--r3-top);left:var(--c1-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R3C1</div>
+		<div
+			style="position: absolute;top:var(--r3-top);left:var(--c2-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R3C2</div>
+		<div
+			style="position: absolute;top:var(--r3-top);left:var(--c3-left);width:var(--frame-width);height:var(--frame-height);background-color: rgba(0, 0, 0, 1);">
+			R3C3</div>
+	</div>
+	<!--
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+
+					ALERT POSISIONNING
+
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+	-->
+	<div id="ALERT">
+		<div style="position: absolute;top: 20%;left: 20%;width:60%;height: 50%;
+			padding: 30px 10px 10px 10px;background-color: rgba(0, 0, 0, 1);">
+			<div id="alsertMSG" class="MSG"><b>my_ALERT:</b> <br> zlerjzlejlefjùzlfjùl zefjzelùfjù elfj ù aefjk aùefjkùa efj
+				aùlfja fùl fj alù kfja flkfj aùlfj </div>
+			<button id="OK" class="bigBtn" type="button" style="position:absolute;top:70%;left:78%;">OK</button>
+		</div>
+	</div>
+	<div id="LOG">
+		<div class="verticalScroll">
+			<div id="logMSG" style="height: calc(var(--center-height) + var(--head-height));"></div>
+		</div>
+	</div>
+	<!--
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+
+					THREE WEBGL POSISIONNING TO BE FULL WINDOWS 
+
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+	-->
+	<!-- RIGHT M3D CONTROL -------------------------------- -->
+	<div id="M3D" class="M3D M3D_default"></div>
+	<!-- LEFT IMU CONTROL --------------------------------- -->
+	<div id="IMU_ctrl" class="IMU_ctrl IMU_ctrl_default"></div>
+	<!-- 
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+
+					OLD TABLE 
+
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+	-->
+	<div class="mv2_table">
+		<table>
+			<tr>
+				<th>Module</th>
+				<th>Timer</th>
+				<th>TIOS</th>
+				<th>EXEC</th>
+				<th>Loc</th>
+				<th>Rov</th>
+			</tr>
+			<tr>
+				<td>Motors</td>
+				<td>
+					<div id="divTim_MOTORS"></div>
+				</td>
+				<td>
+					<div id="divTio_MOTORS"></div>
+				</td>
+				<td>
+					<div id="divExe_MOTORS"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_MOTORS"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_MOTORS"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>Datim</td>
+				<td>
+					<div id="divTim_DATIM"></div>
+				</td>
+				<td>
+					<div id="divTio_DATIM"></div>
+				</td>
+				<td>
+					<div id="divExe_DATIM"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_DATIM"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_DATIM"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>Driver</td>
+				<td>
+					<div id="divTim_DRIVER"></div>
+				</td>
+				<td>
+				</td>
+				<td>
+					<div id="divExe_DRIVER"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_DRIVER"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_DRIVER"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>Jobgoal</td>
+				<td>
+					<div id="divTim_JOBGOAL"></div>
+				</td>
+				<td>
+					<div id="divExe_JOBGOAL"></div>
+				</td>
+				<td>
+				</td>
+				<td>
+					<div id="divDbgLOC_JOBGOAL"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_JOBGOAL"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>WATCH</td>
+				<td>
+					<div id="divTim_WATCH"></div>
+				</td>
+				<td>
+					<div id="divTio_WATCH"></div>
+				</td>
+				<td>
+					<div id="divExe_WATCH"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_WATCH"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_WATCH"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>WSrover</td>
+				<td>
+					<div id="divTim_WSROV"></div>
+				</td>
+				<td>
+					<div id="divTio_WSROV"></div>
+				</td>
+				<td>
+					<div id="divExe_WSROV"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_WSROV"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_WSROV"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>WSbasis</td>
+				<td>
+					<div id="divTim_WSBAS"></div>
+				</td>
+				<td>
+					<div id="divTio_WSBAS"></div>
+				</td>
+				<td>
+					<div id="divExe_WSBAS"></div>
+				</td>
+				<td>
+					<div id="divDbgLOC_WSBAS"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_WSBAS"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>Filsys</td>
+				<td>
+					<div id="divTim_FILSYS"></div>
+				</td>
+				<td>
+					<div id="divTio_FILSYS"></div>
+				</td>
+				<td>
+					<div id="divExe_FILSYS"></div>
+				</td>
+
+				<td>
+					<div id="divDbgLOC_FILSYS"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_FILSYS"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>Leds</td>
+				<td>
+					<div id="divTim_LEDS"></div>
+				</td>
+				<td>
+					<div id="divTio_LEDS"></div>
+				</td>
+				<td>
+					<div id="divExe_LEDS"></div>
+				</td>
+				<td>
+					<div id="divDbgLOC_LEDS"></div>
+				</td>
+				<td>
+					<div id="divDbgROV_LEDS"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<!-- 
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+
+					APPLICATION FRAME
+
+	§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+	-->
+	<div id="FRAME">
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+						LOGO & TITLE
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<h1 style="display:inline;">Rover Pilot</h1>
+		<h3 style="display:inline;"> 1.00</h3>
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+						EMERGENCY  STOP
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<div id="RESET">
+			<button class="emergencyBtn" type="button" onclick="RESET()"></button>
+		</div>
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+						MODES CONTAINER
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<div id="RIGHT" class="verticalScroll">
+			<button id="ADMIN" class="bigBtn" type="button" onclick="ADMIN(this)">ADMIN</button>
+			<button id="DRIVE" class="bigBtn" type="button" onclick="DRIVE(this)">DRIVE</button>
+			<button id="LEARN" class="bigBtn" type="button" onclick="LEARN(this)">LEARN</button>
+			<button id="ROAM" class="bigBtn" type="button" onclick="ROAM(this)">ROAM</button>
+			<button id="WORK" class="bigBtn" type="button" onclick="WORK(this)">WORK</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+			<button id="btn_" class="bigBtn" type="button">-</button>
+		</div>
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+						FOOT CONTAINER
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<div id="FOOT">
+			<!-- 
+			###########################################################
+			-->
+			<!-- 
+				FOOT SWAP VIEWS | CONTROLS BUTTON ---------------------
+			-->
+			<button class="checkBtn little" type="button" onclick="swapVC(this)">VIEW</button>
+			<!-- 
+				FOOT CHOOSE VIEWS -------------------------------------
+			-->
+			<div class="horizontalScroll">
+				<div id="viewsMenu" style="width: 1000px;">
+					<button class="radioBtn little" type="button" onclick="showView('CENTER_ur')">NONE</button>
+					<!-- !!! Set only one default Hactive button !!! -->
+					<button class="radioBtn little Hactive" type="button"
+						onclick="showView('CENTER_ur','ATT')">Attitude</button>
+					<button class="radioBtn little" type="button" onclick="showView('CENTER_ur','M3D')">M3D</button>
+					<button class="radioBtn little" type="button" onclick="showView('CENTER_ur','IMU')">IMU</button>
+					<button class="radioBtn little" type="button" onclick="showView('CENTER_ur','SYS')">SYS</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ur','MOTORS')">Motors</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ur','WORKJOB')">Workjob</button>
+					<button class="radioBtn little" type="button" onclick="showView('CENTER_ur','MAP')">Map</button>
+					<button class="radioBtn little" type="button">09</button>
+					<button class="radioBtn little" type="button">10</button>
+					<button class="radioBtn little" type="button">11</button>
+					<button class="radioBtn little" type="button">12</button>
+				</div>
+			</div>
+			<!-- 
+				FOOT CHOOSE CONTROLS ----------------------------------
+			-->
+			<div class="horizontalScroll">
+				<div id="ctrlsMenu" style="width: 1000px;display : none;">
+					<!-- !!! Set only one default Hactive button !!! -->
+					<button class="radioBtn little Hactive" type="button" onclick="showView('CENTER_ul')">NONE</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ul','ATT_ctrl')">Attitude</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ul','M3D_ctrl')">M3D</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ul','IMU_ctrl')">IMU</button>
+					<button class="radioBtn little" type="button"
+						onclick="showView('CENTER_ul','SYS_ctrl')">SYS</button>
+					<button class="radioBtn little" type="button">06</button>
+					<button class="radioBtn little" type="button">07</button>
+					<button class="radioBtn little" type="button">08</button>
+					<button class="radioBtn little" type="button">09</button>
+					<button class="radioBtn little" type="button">10</button>
+					<button class="radioBtn little" type="button">11</button>
+					<button class="radioBtn little" type="button">12</button>
+				</div>
+			</div>
+		</div>
+		<!--
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+						HEAD CONTAINER
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<div id="HEAD">
+			<!-- 
+			###########################################################
+			-->
+			<!-- 
+				HEAD IMU BUTTONS & IOSTATUS --------------------------------
+			-->
+			<div id='IMU_head' class='IMU_head IMU_head_default'>
+				<div class='horizontalScroll'>
+					<div style="width: 1000px;">
+						<button class="checkBtn little" type="button" onclick="IMU.calIMU()">cal IMU</button>
+						<button class="checkBtn little" type="button" onclick="IMU.calMAG()">cal MAG</button>
+						<!-- Set one default Hactive button -->
+					</div>
+				</div>
+				<div id='IMU_io'>IMU_status </div>
+			</div>
+			<!-- 
+				HEAD M3D BUTTONS & IOSTATUS --------------------------------
+			-->
+			<div id='M3D_head' class='M3D_head M3D_head_default'>
+				<div class='horizontalScroll'>
+					<div style="width: 1000px;">
+						<!-- Set one default Hactive button -->
+						<button class="radioBtn little Hactive" type="button"
+							onclick="M3D.camera('K_4')">Gnd-Fix</button>
+						<button class="radioBtn little" type="button" onclick="M3D.camera('K_1')">Gnd&gt;Rov</button>
+						<button class="radioBtn little" type="button" onclick="M3D.camera('K_3')">Rov-Fix</button>
+						<button class="radioBtn little" type="button" onclick="M3D.camera('K_2')">Rov&gt;Gnd</button>
+						<button class="radioBtn little" type="button">5</button>
+						<button class="radioBtn little" type="button">6</button>
+						<button class="radioBtn little" type="button">7</button>
+						<button class="radioBtn little" type="button">8</button>
+					</div>
+				</div>
+				<div id='M3D_io'>M3D_status </div>
+			</div>
+			<!-- 
+				HEAD SYSTEM MANUAL CTLKMD ---------------------------------------------------
+			-->
+			<div id='SYS_head' class='SYS_head SYS_head_default'>
+				<div id="CTLKMD_container" class="CTLKMD_container CTLKMD_container_default">
+					<form onsubmit="return (envoiManualKommand(this.submited));">
+						<table>
+							<tr>
+								<!--
+								<td><input id="wsB" type="submit" onclick="this.form.submited=this.id;" value="BASIS"
+										style="width: 50px;" /></td>
+								-->
+								<td><input id="wsR" type="submit" onclick="this.form.submited=this.id;" value="ENVOI"
+										style="width: 75px;" /></td>
+								<td><input type="text" name="ModKmd" id="ModKmd" style="width: 200px;" /></td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<div id='SYS_io'>SYS_status </div>
+			</div>
+			<!-- 
+				HEAD ATTITUDE SWITCHES & STATUS ===================================== 
+			-->
+			<div id='ATT_head' class='ATT_head ATT_head_default'>
+				<div class='horizontalScroll'>
+					<div style="width: 1000px;">
+						<button class="checkBtn little" type="button" onclick="ATT.XYZo()">XYZo</button>
+						<!-- Set one default Hactive button -->
+						<button class="radioBtn little Hactive" type="button">Init</button>
+						<button class="radioBtn little" type="button">Reset</button>
+						<button class="radioBtn little" type="button">5</button>
+						<button class="radioBtn little" type="button">6</button>
+						<button class="radioBtn little" type="button">7</button>
+						<button class="radioBtn little" type="button">8</button>
+					</div>
+				</div>
+				<div id='ATT_io'>ATT_status </div>
+			</div>
+			<!--
+				HEAD WORKJOB STATUS ----------------------------------- 
+			-->
+			<div id='WORKJOB_head' class='WORKJOB_head WORKJOB_head_default'>
+				<div id="IOworkjob_container" class="IOworkjob_container IOworkjob_container_default"></div>
+			</div>
+		</div>
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+							CENTER CONTAINER
+
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+		<div id='CENTER'>
+			<!-- 
+			###########################################################
+			-->
+			<!-- LEFT JOYSTICK CONTAINER -------------------------- -->
+			<div id="JOYSTICK" style="z-index: 100;">
+				<div class="examplediv"></div>
+				<div id="mv2_pilotVreticle"></div>
+				<div id="mv2_pilotHreticle"></div>
+				<div id="mv2_pilotJS" class="mv2_pilotJS">
+					<div id="mv2_pilotCursor"></div>
+				</div>
+				<div id="mv2_pilotJSBackground" class="mv2_pilotJS" style="pointer-events: none;"></div>
+			</div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- LEFT M3D CONFIGURATION DIALOG -------------------- 
+			-->
+			<div id="M3D_ctrl" class="M3D_ctrl M3D_ctrl_default">
+				<div id="kamMove"></div>
+				<div class="CTRL_title verticalScroll">
+					<div id="scalePos_Tjs"> </div>
+					<div id="x_Cam"> </div>
+					<div id="y_Cam"> </div>
+					<div id="z_Cam"> </div>
+					<div id="roll_Cam"> </div>
+					<div id="pitch_Cam"> </div>
+					<div id="yaw_Cam"> </div>
+					<div id="focal_Cam"> </div>
+					<div id="near_Cam"> </div>
+					<div id="far_Cam"> </div>
+				</div>
+			</div>
+			<!-- RIGHT VIEW MAP 3D -------------------------------- 
+			-->
+			<!--     
+				Absolute div to permit full screen double click
+			-->
+			<!-- 
+			###########################################################
+			-->
+			<!-- LEFT ATTITUDE CONFIGURATION DIALOG --------------- 
+			-->
+			<div id="ATT_ctrl" class="ATT_ctrl ATT_ctrl_default">
+				<div>ATTITUDE</div>
+				<div class="CTRL_title verticalScroll">
+					<div id="scalePos_Att"> </div>
+					<div id="thr_linAcc_Att"> </div>
+					<div id="show_drvInfos_Att"> </div>
+					<div id="_CHOOSE_Att" style="border-style:inset;border-color: #888888;  
+						border-width: 3px;padding-top: 6px;width: 283px;background-color: #b9b4b4;">
+					</div>
+				</div>
+			</div>
+			<!-- RIGHT VIEW ATTITUDE ------------------------------ 
+			-->
+			<div id="ATT" class="ATT ATT_default"></div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- RIGHT VIEW WORKJOB ------------------------------- 
+			-->
+			<div id="WORKJOB" class="WORKJOB WORKJOB_default">
+				<div id="divExe_WORKJOB"></div>
+				<div class="verticalScroll">
+					<div id="divInfo_WORKJOB">
+						Durant l'exécution de la mission, le rover est autonome & le pilote peut se
+						déconnecter.
+						Sinon le n° de ligne du fichier est affiché toutes les 2 secondes. Et les les commentaires du
+						fichier job sont affichés.
+					</div>
+				</div>
+			</div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- RIGHT VIEW MOTORS -------------------------------- 
+			-->
+			<div id="MOTORS" class="MOTORS MOTORS_default">
+				<!-- no boder true canvas width & height are computed by javascript !!! -->
+				<canvas id="DRVcanvas" style="width: 100%; height: 50%;"></canvas>
+				<!-- no boder true canvas width & height are computed by javascript !!! -->
+				<canvas id="MOTcanvas" style="width: 100%; height: 50%;"></canvas>
+			</div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- RIGHT VIEW MAP 2D -------------------------------- 
+			-->
+			<div id="MAP" class="MAP MAP_default">
+				<!-- true canvas width & height are computed by javascript !!! -->
+				<canvas id="MAPcanvas" style="width: 100%; height: 100%; border: 1px solid #000000;"></canvas>
+			</div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- RIGHT VIEW IMU ----------------------------------- 
+			-->
+			<div id="IMU" class="IMU IMU_default">
+				<!-- true canvas width & height are computed by javascript !!! -->
+				<canvas id="IMUcanvas" style="width: 100%; height: 100%; border: 1px solid #000000;"></canvas>
+			</div>
+			<!-- 
+			###########################################################
+			-->
+			<!-- LEFT SYS CONFIGURATION DIALOG -------------------- 
+			-->
+			<div id="SYS_ctrl" class="SYS_ctrl SYS_ctrl_default">
+				<div>SYS-tème</div>
+				<div class="CTRL_title verticalScroll">
+					<div id="ALL_DBGMAX_TRUNC_Dbg"> </div>
+					<div id="MAX_DBG_DRV_XIMU_Dbg"> </div>
+					<div id="show_drvInfos_Dbg"> </div>
+					<div id="_CHOOSE_Dbg" style="border-style:inset;border-color: #888888;  
+						border-width: 3px;padding-top: 6px;width: 283px;background-color: #b9b4b4;">
+					</div>
+					<div id="_CHOOSE2_Dbg" style="border-style:inset;border-color: #888888;  
+						border-width: 3px;padding-top: 6px;width: 283px;background-color: #b9b4b4;">
+					</div>
+				</div>
+			</div>
+			<!-- RIGHT SYS DATA ----------------------------------- 
+			-->
+			<div id="SYS" class="SYS SYS_default">
+				<div id="wglCount"> </div>
+			</div>
+		</div>
+		<!-- 
+		@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		-->
+	</div>
+	<script type="module" src="three.mjs"></script>
+	<script type="text/javascript">
+		var webGL_ctrl = function (KEY, VALUE) {
+			webglCTRL[KEY] = Number(VALUE);
+		}
+		window.onload = Start;//Start();
+	</script>
+</body>
+
+</html>

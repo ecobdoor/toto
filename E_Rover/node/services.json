@@ -1,0 +1,41 @@
+{
+    "rover_ON"  :true, 
+    "NET":{
+
+        "rover_CFG":  "rover_STAT_bdoor", 
+        "pilot_CFG":  "pilot_HOST_bdoor",
+
+        "rover_AP":{
+            "rover_comment":"Rover as AP",
+            "rover_URL"     :"192.168.4.1",
+            "rover_PORT"    :80
+        },
+        "rover_STAT_BazUbu":{
+            "rover_comment":"Rover as STAT on BazUbu",
+            "rover_URL"      :"10.42.0.191",
+            "rover_PORT"    :80
+        },
+        "rover_STAT_bdoor":{
+            "rover_comment":"Rover as STAT on bdoor",
+            "rover_URL":    "192.168.13.35",
+            "rover_PORT"    :80
+        },
+
+
+        "pilot_HOST_bdoor":{
+            "pilot_comment":"Pilot server on bdoor (dev)",
+            "pilot_URL":    "192.168.13.067",
+            "pilot_PORT"    :3001
+        },
+        "pilot_AP_BazUbu":{
+            "pilot_comment":"Pilot server on BazUbu (dev)",
+            "pilot_URL":    "10.42.0.191",
+            "pilot_PORT"    :3001
+        },
+        "pilot_AP_rover":{
+            "pilot_comment":"Pilot server on rover (AP)",
+            "pilot_URL":    "192.168.4.1",
+            "pilot_PORT"    :80
+        }
+    }
+}

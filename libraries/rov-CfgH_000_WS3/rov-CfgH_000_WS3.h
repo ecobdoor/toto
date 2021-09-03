@@ -5,21 +5,36 @@
 //
 //     This file is generated automatically. Don't modify it !!!
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// LED pin is IO2 ???
+
 #ifndef	 _CFG_ROVER_000_WS3_
 #define	 _CFG_ROVER_000_WS3_	
-#include "../rov-CfgH_000_WS3/rov_INC.inc"		//	reference telemetry (kamm... udp log & csv) !!!
+///////////////////////////////////////////////////////////////////////
+#define	 DEF_BLUE_LED		 2
+
+#define vio7PIN_Lsns  		13 //#define	 DEF_PIN_SENSLEFT	13	//	Sens de rotation
+#define blu6PIN_Lpwm  		12 //#define	 DEF_PIN_PWMLEFT	12	//	Vitesse de rotation
+#define gre5PIN_Rsns  		14 //#define	 DEF_PIN_SENSRIGHT	14	//	Sens de rotation !! UP@upload
+#define yel4PIN_Rpwm 		27 //#define	 DEF_PIN_PWMRIGHT	27	//	Vitesse de rotation
+#define ora3PIN_imu 		16
+#define red2PIN_serial  	17
+#define bro1PIN_udp 		25
+#define whi0PIN_wsx  		26	// Websocket pulse:receive, level:send
+
+
+#define DEF_WITHMOTORSPINS
+
+
+
+
+
+
 //	======================================================
 //	 ESPDUINO 32 PINOUT & ADDRESSES
 //	------------------------------------------------------
-#define	 DEF_BLUE_LED	2
-#define	 DEF_PIN_SENSLEFT	13		//	Sens de rotation
-#define	 DEF_PIN_PWMLEFT	12		//	Vitesse de rotation
-#define	 DEF_PIN_SENSRIGHT	14		//	Sens de rotation !! UP@upload
-#define	 DEF_PIN_PWMRIGHT	27		//	Vitesse de rotation
-#define	 DEF_PIN_I2CSCL	0		//	I2C clock
-#define	 DEF_PIN_I2CSDA	0		//	I2C data
-#define	 DEF_AGM_ADDRS	0		//	AccGyrMag address
-#define	 DEF_USD_ADDRS	0		//	ultrasonic address
+//
+
+#include "../rov-CfgH_000_WS3/rov_INC.inc"		//	reference tele metry (kamm... udp log & csv) !!!
 //	======================================================
 //	 GLOBAL WS & JSON PROTOCOLS
 //	------------------------------------------------------
@@ -41,60 +56,60 @@
 //	======================================================
 //	 GLOBAL COMMANDS DICTIONNARY
 //	------------------------------------------------------
-#define	 DEF_KF_DIR	"D"		//	KMD field
-#define	 DEF_KF_SPD	"S"		//	KMD field
-#define	 DEF_KF_LFT	"L"		//	KMD field
-#define	 DEF_KF_RGT	"R"		//	KMD field
-#define	 DEF_KF_FIL	"F"		//	KMD field
-#define	 DEF_KF_GET	"@"		//	KMD field
-#define	 DEF_KF_EXE	"X"		//	KMD field
-#define	 DEF_KF_MTS	"MTS"		//	KMD field (µs)
-#define	 DEF_KF_PMTS	"MTS"		//	KMD field
-#define	 DEF_KF_IMUT	"DTK"		//	KMD field
-#define	 DEF_KF_XC0	"XC0"		//	KMD field
-#define	 DEF_KF_YC0	"YC0"		//	KMD field
-#define	 DEF_KF_ZC0	"ZC0"		//	KMD field
-#define	 DEF_KF_ROLL	"DNR"		//	KMD field
-#define	 DEF_KF_PITCH	"DEP"		//	KMD field
-#define	 DEF_KF_YAW	"DDY"		//	KMD field
-#define	 DEF_KF_GRX	"DGX"		//	KMD field
-#define	 DEF_KF_GRY	"DGY"		//	KMD field
-#define	 DEF_KF_GRZ	"DGZ"		//	KMD field
-#define	 DEF_KF_DIST	"DST"		//	KMD field
-#define	 DEF_KF_LAX	"DAX"		//	KMD field
-#define	 DEF_KF_LAY	"DAY"		//	KMD field
-#define	 DEF_KF_LAZ	"DAZ"		//	KMD field
-#define	 DEF_KF_SPX	"SPX"		//	KMD field
-#define	 DEF_KF_SPY	"SPY"		//	KMD field
-#define	 DEF_KF_SPZ	"SPZ"		//	KMD field
-#define	 DEF_KF_Iax	"Iax"		//	KMD field
-#define	 DEF_KF_Iay	"Iay"		//	KMD field
-#define	 DEF_KF_Iaz	"Iaz"		//	KMD field
-#define	 DEF_KF_Igx	"Igx"		//	KMD field
-#define	 DEF_KF_Igy	"Igy"		//	KMD field
-#define	 DEF_KF_Igz	"Igz"		//	KMD field
-#define	 DEF_KF_Imx	"Imx"		//	KMD field
-#define	 DEF_KF_Imy	"Imy"		//	KMD field
-#define	 DEF_KF_Imz	"Imz"		//	KMD field
+#define	 DEF_KF_DIR	"D"
+#define	 DEF_KF_SPD	"S"
+#define	 DEF_KF_LFT	"L"
+#define	 DEF_KF_RGT	"R"
+#define	 DEF_KF_FIL	"F"
+#define	 DEF_KF_GET	"@"
+#define	 DEF_KF_EXE	"X"
+#define	 DEF_KF_MTS	"MTS"
+#define	 DEF_KF_PMTS	"MTS"
+#define	 DEF_KF_IMUT	"DTK"
+#define	 DEF_KF_XC0	"XC0"
+#define	 DEF_KF_YC0	"YC0"
+#define	 DEF_KF_ZC0	"ZC0"
+#define	 DEF_KF_ROLL	"DNR"
+#define	 DEF_KF_PITCH	"DEP"
+#define	 DEF_KF_YAW	"DDY"
+#define	 DEF_KF_GRX	"DGX"
+#define	 DEF_KF_GRY	"DGY"
+#define	 DEF_KF_GRZ	"DGZ"
+#define	 DEF_KF_DIST	"DST"
+#define	 DEF_KF_LAX	"DAX"
+#define	 DEF_KF_LAY	"DAY"
+#define	 DEF_KF_LAZ	"DAZ"
+#define	 DEF_KF_SPX	"SPX"
+#define	 DEF_KF_SPY	"SPY"
+#define	 DEF_KF_SPZ	"SPZ"
+#define	 DEF_KF_Iax	"Iax"
+#define	 DEF_KF_Iay	"Iay"
+#define	 DEF_KF_Iaz	"Iaz"
+#define	 DEF_KF_Igx	"Igx"
+#define	 DEF_KF_Igy	"Igy"
+#define	 DEF_KF_Igz	"Igz"
+#define	 DEF_KF_Imx	"Imx"
+#define	 DEF_KF_Imy	"Imy"
+#define	 DEF_KF_Imz	"Imz"
 //	======================================================
 //	 GLOBAL OPERATIONS DICTIONNARY
 //	------------------------------------------------------
-#define	 DEF_OP_INFO	"Inf"		//	KMD operation
-#define	 DEF_OP_MOT	"Mot"		//	KMD operation
-#define	 DEF_OP_PID	"Pid"		//	KMD operation
-#define	 DEF_OP_STOP	"Stop"		//	KMD operation
-#define	 DEF_OP_OPEN	"Open"		//	KMD operation
-#define	 DEF_OP_CLOSE	"Close"		//	KMD operation
-#define	 DEF_OP_SYNC	"Syn"		//	KMD operation
-#define	 DEF_OP_LEARN	"Learn"		//	KMD operation
-#define	 DEF_OP_JOBGOAL	"Jobgoal"		//	KMD operation
-#define	 DEF_OP_PILOT	"Pilot"		//	KMD operation
-#define	 DEF_OP_TSTSQ	"TstSQ"		//	KMD operation
-#define	 DEF_OP_SETDLVL	"set_DLVL"		//	KMD operation
-#define	 DEF_OP_SETTOUT	"setTmsOut"		//	KMD operation
-#define	 DEF_OP_GETTOUT	"getTmsOut"		//	KMD operation
-#define	 DEF_OP_OK	"Ok?"		//	KMD operation
-#define	 DEF_OP_CHK	"Chk"		//	KMD operation
+#define	 DEF_OP_INFO	"Inf"
+#define	 DEF_OP_MOT	"Mot"
+#define	 DEF_OP_PID	"Pid"
+#define	 DEF_OP_STOP	"Stop"
+#define	 DEF_OP_OPEN	"Open"
+#define	 DEF_OP_CLOSE	"Close"
+#define	 DEF_OP_SYNC	"Syn"
+#define	 DEF_OP_LEARN	"Learn"
+#define	 DEF_OP_JOBGOAL	"Jobgoal"
+#define	 DEF_OP_PILOT	"Pilot"
+#define	 DEF_OP_TSTSQ	"TstSQ"
+#define	 DEF_OP_SETDLVL	"set_DLVL"
+#define	 DEF_OP_SETTOUT	"setTmsOut"
+#define	 DEF_OP_GETTOUT	"getTmsOut"
+#define	 DEF_OP_OK	"Ok?"
+#define	 DEF_OP_CHK	"Chk"
 //	======================================================
 //	 If browser client is in javascript debug (devtools...)
 //	 Add a delay to period timing
@@ -127,8 +142,7 @@ typedef struct {
 //	------------------------------------------------------
 #include	 <array>
 #define	 DEF_MOTORS_NBAXIS	2
-#define	 DEF_MOTORS_RQSIZE	5
-#define	 DEF_KINE_RQSIZE	20
+#define	 DEF_MOTORS_RQSIZE	3
 typedef std::array<float, DEF_MOTORS_NBAXIS> t_AfloatAxes;
 typedef std::array<int32_t, DEF_MOTORS_NBAXIS> t_Aint32Axes;
 //	======================================================

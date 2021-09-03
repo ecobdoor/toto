@@ -1,7 +1,7 @@
 #include "rov-Mod_Watchdog_000_WS3.h"
 #include "esp32_LOGS.h"
 ///////////////////////////////////////////////////////////////////////
-Watchdog::Watchdog(Flow *FLOW, const s_WATCHDOG MOD_CFG, s_WATctx *CONTEXT, int8_t *DBGMAX)
+Watchdog::Watchdog(c_myFlow *FLOW, const s_WATCHDOG MOD_CFG, s_WATctx *CONTEXT, int8_t *DBGMAX)
 :
 	Module(FLOW, MOD_CFG.MOD, DBGMAX),
 		_Ctx(*CONTEXT){
@@ -12,8 +12,8 @@ Watchdog::Watchdog(Flow *FLOW, const s_WATCHDOG MOD_CFG, s_WATctx *CONTEXT, int8
 /**
  * Executed before time out
  */
-bool Watchdog::auto_MSG(const uint64_t DTMS){
-	return false;
+e_hasMsg Watchdog::auto_MSG(const uint64_t DTMS,JsonObject &KMD){
+	return e_hasMsg::No;
 }
 //---------------------------------------------------------------------
 /**
@@ -28,7 +28,7 @@ bool Watchdog::auto_MSG(const uint64_t DTMS){
  * Clears the flow of queries
  *
  */
-bool Watchdog::complete_MSG(JsonObject &KMD){
+e_hasMsg Watchdog::complete_MSG(JsonObject &KMD){
 	_DBG_MOD_WHAT("\n-----------------------------------EMERGENCY time out/_milliPeriod=(%llu/%i)",
 		milli_TS() - _milliLastTS, _milliPeriod);
 	// Emergency stop rover
@@ -43,7 +43,7 @@ bool Watchdog::complete_MSG(JsonObject &KMD){
 	} else { //simple time out of ws reception n!!!
 		KMD[DEF_KF_EXE] = false;
 	}
-	return true;
+	return e_hasMsg::Full;
 }
 //---------------------------------------------------------------------
 bool Watchdog::reply2pilotQ_OP(JsonObject &JOBJ){

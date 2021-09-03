@@ -1,9 +1,12 @@
 #include <000_SIGNAL_PROCESS.h>
 #include <esp32_LOGS.h>
+#include "esp32_SPRINT.h"
 #include <random>
 //int8_t this_DebugLVL=0;
 ///////////////////////////////////////////////////////////////////////
-sigDsp::sigDsp(){
+int8_t sigDsp_dbglvl = 0;
+sigDsp::sigDsp() :
+	Core("SIG", &sigDsp_dbglvl){
 //	defEngine(time(0));
 	defEngine();
 }
@@ -20,7 +23,7 @@ bool sigDsp::Begin(const String SKMD){
 			_Amplitude = 0.0;
 		_NoiseAmplitude = Float(_args[5].c_str());
 		_Offset = Float(_args[6].c_str());
-//	assert((_CntSamples %2)==0);
+//	ASSERT((_CntSamples %2)==0);
 		switch(toupper(_args[0][0])){
 			case 'A':
 				compute = [=](const int32_t SAMPLE){
@@ -56,6 +59,7 @@ bool sigDsp::Begin(const String SKMD){
 		return true;
 	} catch (EXCEPT const &e) {
 		FIX_ERROR();
+		return false;
 	}
 }
 //---------------------------------------------------------------------
@@ -109,7 +113,9 @@ float sigDsp::calc_halfCosSquare(const int32_t SAMPLE){
 		return -un * _Amplitude;
 }
 ///////////////////////////////////////////////////////////////////////
-imuDsp::imuDsp(){
+int8_t imuDsp_dbglvl = 0;
+imuDsp::imuDsp() :
+	Core("DSP", &imuDsp_dbglvl){
 }
 imuDsp::~imuDsp(){
 	for (size_t i = 0; i < _signal.size(); i++)
@@ -143,7 +149,7 @@ bool imuDsp::Begin(const String SKMD, String &CHN){
 		_GA = Float(_args[5].c_str()); // gyroscop & magnetic amplitude
 		_MA = Float(_args[6].c_str()); // magnetic amplitude
 		_RA = Float(_args[7].c_str()); // radar amplitude
-//	assert((_CntSamples %2)==0);
+//	ASSERT((_CntSamples %2)==0);
 		switch(toupper(_args[0][0])){
 			case 'I': {
 				if (_args[0][1] == '1') {

@@ -1,18 +1,29 @@
 #ifndef __esp32_TASKS__
 #define __esp32_TASKS__
-#include <array>
+//#include <array>
 #include <functional>
 #include "esp32_EXCEPT.h"
+#include "rov-Hard_MOT_000_WS3.h"
+///////////////////////////////////////////////////////////////////////
+// @formatter:off
+const uint16_t P_imuISR_=	0b00000000000000001;
+const uint16_t P_hardPWM_=	0b00000000000000010;
+// @formatter:on
+
+void DETACH(const uint16_t WHICHES);
+void ATTACH(const uint16_t WHICHES);
+void vTaskGetRunTimeStats(char *buffer);
+
 ///////////////////////////////////////////////////////////////////////
 //ESP_TASK_PRIO_MAX - 14, // priority of the task from (tskIDLE_PRIORITY + 1) to (configMAX_PRIORITIES -1 )
-//tskIDLE_PRIORITY		is		1+tskIDLE_PRIORITY
+//tskIDLE_PRIORITY		is		  tskIDLE_PRIORITY
 #define DEF_PRIO_LOGS			1+tskIDLE_PRIORITY // TSK logs
 #define DEF_PRIO_CORE			2+tskIDLE_PRIORITY // TSK root 
 #define DEF_PRIO_VRCV			3+tskIDLE_PRIORITY // FCT onWSMessage WS reveive
 #define DEF_PRIO_RUDP			3+tskIDLE_PRIORITY // FCT onPacket UDP reveive
 #define DEF_PRIO_SUDP			4+tskIDLE_PRIORITY // TSK UPD send
 #define DEF_PRIO_WSND			4+tskIDLE_PRIORITY // TSK WS send
-#define DEF_PRIO_XIMU		   10+tskIDLE_PRIORITY // TSK IMU was good with 5 before udp installed ????
+#define DEF_PRIO_XIMU		   20+tskIDLE_PRIORITY // TSK IMU was good with 5 before udp installed ????
 
 /**
  * @brief enum class e_tasks : unsigned int
@@ -20,20 +31,20 @@
  *
  */
 enum class e_tasks : unsigned int {
-	MAIN,
-	BOOT,
-	SERV,
-	LOOP,
-	KMDS,
-	CORE,
-	RUDP,
-	SUDP,
-	WRCV,
-	WSND,
-	XIMU,
-	YLOG,
-	ZLOG,
-	END,
+	MAIN,///< Main program
+	BOOT,///< Setup function (Arduino)
+	SERV,///< Async web server (html & ws)
+	LOOP,///< Loop task (Arduino)
+	KMDS,///< serial or udp keyboard commands
+	CORE,///< Kern web sockets & modules task (application's kern)
+	RUDP,///< UDP receiver
+	SUDP,///< UDP sender
+	WRCV,///< WS reciever
+	WSND,///< WS sender
+	XIMU,///< IMU task
+	YLOG,///< LOG task for udp tests
+	ZLOG,///< LOG task for udp tests
+	END,///< just for for loops
 };
 static e_tasks& operator ++(e_tasks &e){
 	if (e == e_tasks::END) {
@@ -42,6 +53,15 @@ static e_tasks& operator ++(e_tasks &e){
 	e = e_tasks(static_cast<std::underlying_type<e_tasks>::type>(e) + 1);
 	return e;
 }
+class c_myTASKS: public Core {
+private:
+	int8_t *dbgLvlMax = 0;
+
+public:
+	c_myTASKS() :
+	Core("TASKS",dbgLvlMax) {
+	}
+};
 //typedef std::function<void(void *pvParameters)> f_taskFCT;
 typedef struct {
 	char type = '?';
@@ -105,11 +125,10 @@ int8_t* registerFCT(const e_tasks tskIdx, const char *NAME, int8_t *THIS_DBGLVL,
 void launchTASK(const e_tasks tskIdx, TaskHandle_t &TSKHDL, const char *NAME, TaskFunction_t F,
 	void *PARAM, int8_t *THIS_DBGLVL, const uint32_t STACK, const int CORE, const int PRIORITY);
 String dump_TASKS();
-void kill_tasks();
 ///////////////////////////////////////////////////////////////////////
 class c_linkISR {
 //	typedef std::function<void(void)> f_link_ISR; pour passer void IRAM_ATTR iimu_ISR() mais marche pas !!!
-private: // Disallow creating an instance of this class
+private: ///< private constructor, disallow creating an instance of this class
 	c_linkISR(){
 	}
 public:
@@ -118,5 +137,12 @@ public:
 	static void detach_ISR();
 	static uint8_t pin();
 };
+///////////////////////////////////////////////////////////////////////
+extern bool imuFlag;
+extern uint64_t isr_microTimeStamp;
+///////////////////////////////////////////////////////////////////////
+extern c_myTASKS myTASKS;
+extern H_pwmMotors *pwmMotors;
+///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
 #endif //__000_TASK__

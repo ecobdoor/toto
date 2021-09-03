@@ -54,6 +54,7 @@ socketUDP::socketUDP(const std::string NAME, int domain, int type, int protocol,
 	memset(&_REMOTEADDR, 0, sizeof(_REMOTEADDR));
 }
 socketUDP::~socketUDP(){
+	//printf("\n _sockfd='%i'",_sockfd);
 	if (-1 < _sockfd)
 		close(_sockfd);
 }
@@ -66,9 +67,9 @@ void socketUDP::connect2server(const string IP, const int PORT){
 	_REMOTEADDR.sin_port = htons(PORT);
 	_REMOTEADDR.sin_addr.s_addr = inet_addr(IP.c_str()); //INADDR_ANY;
 	if (_REMOTEADDR.sin_addr.s_addr == 0xFFFFFFFF)
-		cout << "ERROR connect2server";
+		cout << "ERROR connect to";
 	else
-		cout << "OK connect2server";
+		cout << "   OK connect to";
 	// Try to connect.
 	int cnx=connect(this->_sockfd, (const sockaddr*)&_REMOTEADDR, sizeof(sockaddr_in));
 	if (cnx < 0) {

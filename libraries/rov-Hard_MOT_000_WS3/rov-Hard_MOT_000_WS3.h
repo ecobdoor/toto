@@ -6,17 +6,17 @@
 /**
  * \class H_pwmMotors :public H_Module
  */
-//#define DEF_WITHMOTORSPINS
 class H_pwmMotors: public H_Module {
 private:
 	asmPWMs &data;
 	void analogWrite(const t_Aint32Axes VALUES);
-	#ifdef DEF_WITHMOTORSPINS
 	t_Aint32Axes analogRead();
-#endif
+
 public:
 	H_pwmMotors(asmPWMs *PWM, const s_pwm leftCFG, const s_pwm rightCFG,
 		const String NAME, int8_t *DBGMAX, const bool ON = true);
+	void attachPWMpins();
+	void detachPWMpins();
 	/**
 	 * \fn void Set(const t_AfloatAxes & COMMAND);
 	 * \brief thresholds commands on [-1,+1] & scales values in [-pwm._valueMax,+pwm._valueMax]
@@ -53,7 +53,7 @@ private:
 	void integrated(pidQueueData &x, ringQueue<pidQueueData> &RQ, const uint8_t DEPTH);
 	void derived(pidQueueData &x, ringQueue<pidQueueData> &RQ, const uint8_t DEPTH);
 	//	t_AfloatAxes order(t_AfloatAxes CONSIGNE, t_AfloatAxes SENSOR);
-	String dump_PID();
+	String dump_RQ();
 	void dumpRQ(ringQueue<pidQueueData> &RQ);
 	void dump2();
 	void Reset();
@@ -76,7 +76,7 @@ private:
 	 * \brief empties the ringqueue
 	 */
 
-	t_AfloatAxes Run(const t_AfloatAxes &ERROR,const uint64_t MICROTS);
+	t_AfloatAxes Run(const t_AfloatAxes &ERROR, const uint64_t MICROTS);
 	/**
 	 * \fn t_AfloatAxes getLastCMD()
 	 * \brief gets the lasr command s sent to pwm module

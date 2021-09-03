@@ -24,7 +24,7 @@
 #include <Arduino.h>
 #ifdef ESP32
 #include <AsyncTCP.h>
-#define WS_MAX_QUEUED_MESSAGES 32
+#define WS_MAX_QUEUED_MESSAGES 16
 #else
 #include <ESPAsyncTCP.h>
 #define WS_MAX_QUEUED_MESSAGES 8
@@ -227,6 +227,7 @@ class AsyncWebSocketClient {
     void binary(AsyncWebSocketMessageBuffer *buffer); 
 
     bool canSend() { return _messageQueue.length() < WS_MAX_QUEUED_MESSAGES; }
+    size_t queueLen() { return _messageQueue.length(); }
 
     //system callbacks (do not call)
     void _onAck(size_t len, uint32_t time);

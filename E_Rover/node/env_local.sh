@@ -1,0 +1,14 @@
+GUEST_SDCARD="/media/DEV/ROB_000/GIT/TOTO/E_Rover/node" # MUST BE THE FIRST LINE !!!
+GUEST_IP="192.168.13.12"
+GUEST_PORT="8022"
+GUEST_USER="eric"
+
+SRC_PILOT_FOLDER="/media/DEV/ROB_000/GIT/TOTO/E_Rover/node"
+
+
+USR_PILOT_FOLDER="${GUEST_SDCARD}"
+TRM_PILOT_FOLDER="/storage/4419-5442/Android/data/com.termux/files/PILOT"
+MTP_PILOT_FOLDER="mtp://SAMSUNG_SAMSUNG_Android_520041e0ececc493/Card/Android/data/com.termux/files/PILOT"
+#export ${PILOT_FOLDER}
+#echo "    USR_PILOT_FOLDER='${USR_PILOT_FOLDER}'"
+

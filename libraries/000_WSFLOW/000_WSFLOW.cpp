@@ -2,11 +2,11 @@
 #include "esp32_LOGS.h"
 using namespace std;
 ///////////////////////////////////////////////////////////////////////
-Flow::Flow(const String NAME, int8_t *DBGMAX) :
+c_myFlow::c_myFlow(const String NAME, int8_t *DBGMAX) :
 	Core(NAME.c_str(), DBGMAX){
 }
 //---------------------------------------------------------------------
-int Flow::tag(const uint64_t TMS, const String PROTOCOL){
+int c_myFlow::tag(const uint64_t TMS, const String PROTOCOL){
 	cntQUERIES++;
 	s_QRflow TTT;
 	TTT.Tms = TMS;
@@ -22,7 +22,7 @@ int Flow::tag(const uint64_t TMS, const String PROTOCOL){
 	return cntQUERIES;
 }
 //---------------------------------------------------------------------
-void Flow::ack(const uint32_t TIK){
+void c_myFlow::ack(const uint32_t TIK){
 #ifdef DEBUG_LVL_FLOW
 	dumpFlow(QRwait, "****************ACHNOLEDGE TIK="+String(TIK)+"\nQRwait...");
 	dumpFlow(QRlost, "QRlost...");
@@ -31,32 +31,32 @@ void Flow::ack(const uint32_t TIK){
 	try {
 		if (it == QRwait.end()) {
 			QRlost.insert(*it);
-			throw(String("FATAL CTL.TIK not found: ") + TIK);
+			THROWERR(FLOW_ACKERR, TIK);
 		}
 		QRwait.erase(it);
-	} catch (String const &chaine) {
-		_DEBUG_ERR("\n%s", chaine.c_str());
+	} catch (EXCEPT const &e) {
+		FIX_ERROR();
 	}
 }
 //---------------------------------------------------------------------
-void Flow::clear(){
+void c_myFlow::clear(){
 	QRwait.clear();
 	QRlost.clear();
 }
 //---------------------------------------------------------------------
-bool Flow::check(){
+bool c_myFlow::check(){
 	return true;
 }
 //---------------------------------------------------------------------
-bool Flow::over(){
+bool c_myFlow::over(){
 	return false;
 }
 //---------------------------------------------------------------------
-uint16_t Flow::waitSize(){
+uint16_t c_myFlow::waitSize(){
 	return QRwait.size();
 }
 //---------------------------------------------------------------------
-uint16_t Flow::lostSize(){
+uint16_t c_myFlow::lostSize(){
 	return QRwait.size();
 }
 //---------------------------------------------------------------------

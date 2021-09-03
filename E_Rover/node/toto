@@ -1,0 +1,7 @@
+{
+  "rover_ON": true,
+  "pilot_URL": "192.168.13.67",
+  "pilot_PORT": 3001,
+  "rover_URL": "192.168.13.35",
+  "rover_PORT": 80
+}

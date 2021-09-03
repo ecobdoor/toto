@@ -1,13 +1,13 @@
 body {
-       position: fixed;
-    width: 100%;
-    height: 100%;
-    margin-top: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
-    margin-bottom: 0px;
-    font-size: 12px;
-    /*
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	margin-bottom: 0px;
+	font-size: 12px;
+	/*
   display: block;
   margin: 0px;
   width:500px;
@@ -15,204 +15,544 @@ body {
   overflow: hidden;
   */
 }
-.kfwork{
-    margin-top: 20px;
-    margin-right: 20px;
-    margin-left: 20px;
-    margin-bottom: 20px;
+
+.kfwork {
+	margin-top: 10px;
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
 }
-/*
-    MONITORING
-    */
-#mv2_horizontalBar{
-/*background-color: transparent;*/
-z-index:1000;
-}
-.mv2_horizontalBarContainer{
-    width: 382px;
-    height: 40px;
-    background: rgba(0,0,0,.3);
-    margin-top: 0px;
-    position: absolute;
-        top:266px;
-        left:0px;
-    margin-left: 40px;
-    border-radius: 20px;
-    z-index:-1;
-}
-.mv2_horizontalBar{
-    width: 382px;
-    height: 40px;
-    background: rgba(0,0,0,.3);
-    margin-top: 0px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    margin-left: 0px;
-    border-radius: 20px;
-    z-index:-1;
-}
-#mv2_horizontalCursor{
-    cursor: pointer;
-    width: 38px;
-    height: 38px;
-    /*border-radius: 50%;*/
-    margin-top: 1px;
-    background: transparent;
-    background-image:url('https://bdoor.hd.free.fr/VEITECH/MMVVT/Theme/mv2_timelineCursor.png');
-    background-size: 38px 38px;
-    background-position:center center; 
-    background-repeat:no-repeat;
-}
+
 /*
     PILOT
     */
-.mv2_select{
-    background: rgba(200,0,255);
-    width: 128px;
-    height: 20px;
-    font-size: 12px;
+.mv2_select {
+	background: rgba(200, 0, 255);
+	width: 128px;
+	height: 20px;
+	font-size: 12px;
 }
-.classTimer{
-    width: 58px;
-	
+
+.classTimer {
+	width: 58px;
 }
-.classExec{
-    width: 80px;
-	
+
+.classExec {
+	width: 80px;
 }
-.classT_i_o{
-    background: rgba(200,0,255);
-    width: 380px;
-    height: 20px;
-    font-size: 12px;
+
+.sel_WORKJOB {
+	width: 180px;
 }
-.classTA_i_o{
-    background: rgba(200,0,255);
-    width: 380px;
-    height: 190px;
+
+.classT_i_o {
+	background: rgba(200, 0, 255);
+	width: 380px;
+	height: 20px;
+	font-size: 12px;
+}
+
+.classTA_i_o {
+	background: rgba(200, 0, 255);
+	width: 302px;
+	height: 256px;
 	font-family: "Courier New", Courier, monospace;
-    font-size: 12px;
+	font-size: 12px;
 }
-.classDebug{
-    width: 32px;
-    height: 20px;
+
+.classDebug {
+	width: 32px;
+	height: 20px;
 }
-#mv2_pilotJS{
+
+#mv2_pilotJS {
+	
 }
-.mv2_table{
-    margin-left: 25px;
-    position: absolute;
-        top:260px;
-        left:10px;
-    z-index:10000;
-    margin-left: 0px;
-    font-size: 15px;
-    color: #444;
-}
-.mv2_pilotJSContainer{
-    width: 250px;
-    height: 250px;
-    background: rgba(0,0,0,.3);
-    margin-left: 25px;
-    position: absolute;
-        top:10px;
-        left:10px;
-    z-index:10000;
-    margin-left: 0px;
-    border-radius: 20px;
-}
-.mv2_pilotJS{
-    width: 250px;
-    height: 250px;
-    background: rgba(0,0,0,.3);
-    margin-left: 25px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    z-index:10000;
-    margin-left: 0px;
-    border-radius: 20px;
-}
-#mv2_pilotCursor{
-    cursor: pointer;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    margin-left: 1px;
-    background: red;
-    z-index:10000;
-}
-div.examplediv {
-    margin-left: 37px;
-    margin-top: 37px;
-    width: 176px;
-    height: 176px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    background-color: lightblue;
-    /* Rotate div */
-    -ms-transform: rotate(45deg); /* IE 9 */
-    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
-    transform: rotate(45deg);
-}
-#mv2_pilotHreticle{
-    width: 250px;
-    height: 1px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    margin-left: 0px;
-    margin-top: 125px;
-    background: red;
-    z-index:10000;
-}
-#mv2_pilotVreticle{
-    width: 1px;
-    height: 250px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    margin-left: 125px;
-    margin-top: 0px;
-    background: red;
+
+.mv2_table {
+	margin-left: 25px;
+	position: absolute;
+	top: 350px;
+	left: 940px;
+	z-index: 10000;
+	margin-left: 0px;
+	font-size: 15px;
+	color: #444;
 }
 /*
-    VERTICAL
-    */
-#mv2_verticalBar{
+    JOYSTICK
+*/
+#JOYSTICK {
+	width: 250px;
+	height: 250px;
+	background: rgba(0, 0, 0, .3);
+	margin-left: 25px;
+	position: absolute;
+	top: 40px;
+	left: 10px;
+	z-index: 10000;
+	margin-left: 0px;
+	border-radius: 20px;
 }
-.mv2_verticalBarContainer{
-    width: 40px;
-    height: 235px;
-    background: rgba(0,0,0,.3);
-    margin-left: 25px;
-    position: absolute;
-        top:30px;
-        left:0px;
-    z-index:10000;
-    margin-left: 0px;
-    border-radius: 20px;
+
+.mv2_pilotJS {
+	width: 250px;
+	height: 250px;
+	background: rgba(0, 0, 0, .3);
+	margin-left: 25px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 10000;
+	margin-left: 0px;
+	border-radius: 20px;
 }
-.mv2_verticalBar{
-    width: 40px;
-    height: 235px;
-    background: rgba(0,0,0,.3);
-    margin-left: 25px;
-    position: absolute;
-        top:0px;
-        left:0px;
-    z-index:10000;
-    margin-left: 0px;
-    border-radius: 20px;
+
+#mv2_pilotCursor {
+	cursor: pointer;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	margin-left: 1px;
+	background: red;
+	z-index: 10000;
 }
-#mv2_verticalCursor{
-    cursor: pointer;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    margin-left: 1px;
-    background: black;
+
+div.examplediv {
+	margin-left: 37px;
+	margin-top: 37px;
+	width: 176px;
+	height: 176px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color: lightblue;
+	/* Rotate div */
+	-ms-transform: rotate(45deg); /* IE 9 */
+	-webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+	transform: rotate(45deg);
 }
+
+#mv2_pilotHreticle {
+	width: 250px;
+	height: 1px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin-left: 0px;
+	margin-top: 125px;
+	background: red;
+	z-index: 10000;
+}
+
+#mv2_pilotVreticle {
+	width: 1px;
+	height: 250px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin-left: 125px;
+	margin-top: 0px;
+	background: red;
+}
+
 /*===========================================*/
+body {
+	background-color: rgb(150, 150, 150);
+	color: white;
+	text-align: left;
+}
+
+#log {
+	background-color: white;
+	position: absolute;
+	top: 10px;
+	left: 660px;
+	opacity: 0.8;
+	width: 850px;
+	height: 320px;
+	margin: auto;
+	border: 3px rgb(40, 40, 40) solid;
+	overflow: auto;
+}
+
+.logger {
+	/*
+    position: absolute;
+        top:270px;
+        left:10px;
+*/
+	margin-left: 0px;
+}
+
+#frame {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	opacity: 0.8;
+	width: 640px;
+	height: 340px;
+	margin: auto;
+	border: 2px rgb(255, 255, 255) solid;
+}
+
+.frameer {
+	width: 50px;
+}
+
+.toyBtn {
+	display: inline-block;
+	float: left;
+	border: 0;
+	width: 75px;
+	height: 25px;
+	line-height: 1.5;
+	padding: 0px 5px 0px 5px;
+	font-size: 1rem;
+	text-align: center;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	border-radius: 10px;
+	background-color: rgba(0, 0, 200, 1);
+	background-image: linear-gradient(to top left, rgba(0, 0, 0, .2),
+		rgba(0, 0, 0, .2) 30%, rgba(0, 0, 0, 0));
+	box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6), inset -2px -2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.toyBtn:hover {
+	background-color: rgba(0, 0, 255, 1);
+}
+
+.toyBtn:active {
+	background-color: rgba(128, 200, 255, 1);
+	box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6), inset 2px 2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.Hactive {
+	background-color: rgba(128, 200, 255, 1);
+	box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6), inset 2px 2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.bigBtn {
+	border: 0;
+	width: 60px;
+	line-height: 2.5;
+	padding: 0px 5px 0px 5px;
+	font-size: 1rem;
+	text-align: center;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	border-radius: 10px;
+	background-color: rgba(220, 0, 0, 1);
+	background-image: linear-gradient(to top left, rgba(0, 0, 0, .2),
+		rgba(0, 0, 0, .2) 30%, rgba(0, 0, 0, 0));
+	box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6), inset -2px -2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.bigBtn:hover {
+	background-color: rgba(255, 0, 0, 1);
+}
+
+.bigBtn:active {
+	background-color: rgba(0, 255, 0, 1);
+	box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6), inset 2px 2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.Vactive {
+	background-color: rgba(0, 255, 0, 1);
+	box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6), inset 2px 2px
+		3px rgba(0, 0, 0, .6);
+}
+/**
+ * AREA RIGHT --------------------------------------------------------- 
+ */
+#verticalMenu {
+	overflow-y: scroll;
+	position: absolute;
+	top: 65px;
+	left: 575px;
+	width: 75px;
+	height: 280px;
+	margin: auto;
+	border: 3px rgb(0, 40, 40) solid;
+	z-index: 10000;
+}
+
+.verticalMenuer {
+	width: 50px;
+}
+
+#horizontalMenu {
+	width: 1024px;
+}
+
+.horizontalMenuer {
+	width: 50px;
+}
+/**
+ * AREA FOOT 
+ */
+#fixMen {
+	position: absolute;
+	top: 2px;
+	left: 575px;
+	width: 60px;
+	height: 60px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.fixMener {
+	width: 50px;
+}
+
+.emergencyBtn {
+	display: inline-block;
+	float: left;
+	border: 0;
+	width: 60px;
+	height: 60px;
+	line-height: 1.5;
+	padding: 0px 5px 0px 5px;
+	font-size: 1rem;
+	text-align: center;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	border-radius: 30px;
+	background-color: rgba(255, 255, 0, 1);
+	/*
+	background-image: url("?img=/EMERGENCY.gif");
+	*/
+	background-image: url("/EMERGENCY.gif");
+	background-repeat: no-repeat;
+	background-position: 3px 3px;
+	box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6), inset -2px -2px
+		3px rgba(0, 0, 0, .6);
+}
+
+.emergencyBtn:hover {
+	background-color: rgba(255, 0, 0, 1);
+}
+
+.emergencyBtn:active {
+	background-color: rgba(128, 200, 255, 1);
+	box-shadow: inset -2px -2px 3px rgba(0, 255, 0, .6), inset 2px 2px 3px
+		rgba(0, 0, 0, .6);
+}
+
+/**
+ * AREA HEAD 
+ */
+#HEAD {
+	position: absolute;
+	top: 5px;
+	left: 200px;
+	opacity: 0.8;
+	width: 370px;
+	height: 32px;
+	margin: auto;
+	border: 3px rgb(255, 255, 255) solid;
+	z-index: 10000;
+}
+
+.HEAD_offset {
+	top: 0px;
+	left: 0px;
+}
+
+.IOworkjob_container {
+	position: absolute;
+	background: rgba(200, 0, 255);
+	width: 365px;
+	height: 20px;
+	font-size: 12px;
+}
+
+.IOworkjob_container_default {
+	top: 635px;
+	left: 869px;
+}
+
+.CTLKMD_container {
+	overflow-x: scroll;
+	position: absolute;
+	top: 5px;
+	left: 200px;
+	opacity: 0.8;
+	width: 370px;
+	height: 32px;
+	margin: auto;
+	border: 3px rgb(0, 40, 40) solid;
+	z-index: 10000;
+}
+
+.CTLKMD_container_default {
+	top: 670px;
+	left: 866px;
+}
+
+/**
+ * AREA FOOT 
+ */
+#FOOT {
+	overflow-x: scroll;
+	position: absolute;
+	top: 305px;
+	left: 0px;
+	opacity: 0.8;
+	width: 565px;
+	height: 45px;
+	margin: auto;
+	border: 3px rgb(0, 40, 40) solid;
+	z-index: 10000;
+}
+
+/**
+ * AREA CENTER 
+ */
+#CENTER {
+	position: absolute;
+	top: 40px;
+	left: 0px;
+	/*        opacity: 0.8; */
+	width: 570px;
+	height: 260px;
+	margin: auto;
+	border: 3px rgb(0, 0, 255) solid;
+	/*
+	background-image: url("?img=/CENTER.jpg");
+	*/
+	background-image: url("/CENTER.jpg");
+	background-repeat: no-repeat;
+	background-position: 265px 0px;
+}
+
+.CENTER_offset {
+	top: 0px;
+	left: 260px;
+}
+
+.ATTITUDE {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.WORKJOB {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+	background-color: rgba(0, 0, 200, 1);
+	background-image: linear-gradient(to top left, rgba(0, 0, 0, .2),
+		rgba(0, 0, 0, .2) 30%, rgba(0, 0, 0, 0));
+	box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6), inset -2px -2px
+		3px rgba(0, 0, 0, .6);
+}
+
+#divInfo_WORKJOB {
+	overflow-y: scroll;
+	height: 256px;
+	width: 317px;
+	background-color: rgba(200, 0, 200, 1);
+}
+
+.MAP {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.IMU {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.MOTORS {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.M3D {
+	position: absolute;
+	opacity: 0.9;
+	width: 302px;
+	height: 256px;
+	margin: auto;
+	border: 3px rgb(240, 40, 40) solid;
+}
+
+.ATTITUDE_default {
+	top: 315px;
+	left: 0px;
+}
+
+.M3D_default {
+	top: 585px;
+	left: 625px;
+}
+
+.MAP_default {
+	top: 315px;
+	left: 315px;
+}
+
+.IMU_default {
+	top: 585px;
+	left: 0px;
+}
+
+.MOTORS_default {
+	top: 315px;
+	left: 625px;
+}
+
+.WORKJOB_default {
+	top: 585px;
+	left: 315px;
+}
+
+/**
+*   font-family: "Courier New", Courier, monospace;
+
+Droid Sans Mono',
+Consolas, ()rare)
+Menlo,
+Monaco,
+Lucida Console,
+Liberation Mono,
+DejaVu Sans Mono,
+Bitstream Vera Sans Mono,
+Courier New,
+monospace,
+serif
+*/
+.line {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
+	border-bottom: 1px rgb(80, 80, 80) solid;
+	padding: 4px;
+	text-align: left;
+	color: rgb(40, 40, 40);
+}

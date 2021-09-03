@@ -1,0 +1,95 @@
+///////////////////////////////////////////////////////////////////////
+/*
+import {
+  BoxBufferGeometry,
+  Color,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+} from "https://github.com/mrdoob/three.js/tree/dev/src/core";      
+*/
+/*
+//  OK  ===============================================
+import * as THREE from 'https://cdn.skypack.dev/three'
+import threejsOrbitControls from 'https://cdn.skypack.dev/threejs-orbit-controls';
+*/
+//  OK  ===============================================
+import * as THREE from './THREE/three.js/build/three.module.js'
+import { OrbitControls } from './THREE/three.js/examples/jsm/controls/OrbitControls.js';
+
+/*
+////////////// KO ////////////////////////
+import OrbitControls from 'threejs-orbit-controls';
+import threejsOrbitControls from 'https://cdn.skypack.dev/threejs-orbit-controls';
+import  { OrbitControls } from './jsm/controls/OrbitControls.js';
+*/
+function TEST(DIV,COLOR){
+     let camera, controls, scene, renderer,cylinder;
+    init();
+    //render(); // remove when using next line for animation loop (requestAnimationFrame)
+    animate();
+    /*
+    function createControls(camera, canvas) {
+      const controls = new THREE.OrbitControls(camera, canvas);
+
+      // damping and auto rotation require
+      // the controls to be updated each frame
+
+      // this.controls.autoRotate = true;
+      controls.enableDamping = true;
+
+      controls.tick = () => controls.update();
+
+      return controls;
+    }
+    */
+    function init() {
+         scene = new THREE.Scene()
+         renderer = new THREE.WebGLRenderer()
+
+        var container = document.getElementById(DIV);
+        var w = container.offsetWidth;
+        var h = container.offsetHeight;
+
+        camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000)
+
+        const geometry = new THREE.CylinderGeometry(5, 5, 20, 32)
+        const material = new THREE.MeshBasicMaterial({color: COLOR, wireframe: true})
+        cylinder = new THREE.Mesh(geometry, material)
+
+        scene.add(cylinder)
+        camera.position.z = 20
+
+        renderer.setSize(w, h)
+        container.appendChild(renderer.domElement)
+/*
+        controls = new threejsOrbitControls(camera, renderer.domElement);
+*/
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enabled = true;
+        controls.maxDistance = 1500;
+        controls.minDistance = 0;
+
+        //controls = createControls(camera, renderer.domElement);
+
+    }
+    function animate() {
+        /*
+        */
+        cylinder.rotation.x += 0.01
+        cylinder.rotation.y += 0.01
+        render()
+        requestAnimationFrame(animate)
+    }
+    function render() {
+        renderer.render(scene, camera)
+    }
+
+    animate()
+}
+TEST('M3D',0xffff00)
+//TEST('MAP',0xff0000)
+
+///////////////////////////////////////////////////////////////////////

@@ -8,9 +8,9 @@
 //#define ARDUINOJSON_USE_LONG_LONG 1
 //#include "ArduinoJson.h"
 #include "esp32_SYS_json.h"
+#include "esp32_GOODIES.h"
 ///////////////////////////////////////////////////////////////////////
 void clearWatchdog();
-String dumpJSON();
 bool createquery_PILOT(JsonObject &JOBJ);
 bool reply2query_PILOT(JsonObject &JOBJ);
 bool ackno2reply_PILOT(JsonObject &JOBJ); // return false nothing to do
@@ -23,14 +23,29 @@ bool ackno2reply_BASIS(JsonObject &JOBJ);
  *
  * Launch method syntax: (this->*(findOP<OP_method>(map_OP...,X)))(JSON_object);
  * \brief Finds in map M the matching X key's OP method.
- * \tparam const MAP& M map where looking for.
- * \tparam const char * X searched key
+ * \tparam const MAP& M map where to look for.
+ * \tparam const char * X enum class e_hasMsg {
+	No, ///< no message to send
+	Ack, ///< a single acknowledge message to send
+	Full, ///< a completed message to send
+};
+static String ShasMsg(const e_hasMsg HAS){
+	if (HAS == e_hasMsg::No)
+		return String("NO  ");
+	else if (HAS == e_hasMsg::Ack)
+		return String("ACK ");
+	else if (HAS == e_hasMsg::Full)
+		return String("FULL");
+	else
+		return String("+-+-");
+}
+ * searched key
  * \return OP of typedef bool ((Module_inherited)::*(OP_method)(JsonObject & JOBJ);
  */
 template<typename OP, typename MAP>
 OP findOP(const MAP &M, const char *X){
 	auto it = M.find(X);
-	assert(it != M.end());
+	ASSERT(it != M.end());
 	return (OP)(it->second);
 }
 ///////////////////////////////////////////////////////////////////////
@@ -67,7 +82,7 @@ class Module: public Core {
 private:
 	public:
 	bool _MODon = true;
-	Flow &_Flow;
+	c_myFlow &_Flow;
 	bool _isRunning = false;
 	String _protocol;
 	String _name;
@@ -77,43 +92,46 @@ private:
 	 */
 	uint32_t _milliPeriod;
 	uint64_t _milliLastTS; //ms
-	Module(Flow *FLOW, const s_MODULE MOD_CFG, int8_t *DBGMAX);
-	bool tmsout_MSG(const uint64_t DTMS);
+	Module(c_myFlow *FLOW, const s_MODULE MOD_CFG, int8_t *DBGMAX);
 	/**
 	 * \fn bool has_MSG();
 	 * \brief Tests if a module has a query to send
 	 *
-	 * \Usually modules receive a request, execute something, and return a response. Except:
-	 * \\n The WATCHDOG module sends a request when the engines are running and the rover no longer
+	 * Usually modules receive a query, execute something, and return a rely. Except:
+	 * - The WATCHDOG module sends a query when the engines are running and the rover no longer
 	 * \\n receives control orders (it causes an emergency stop).
 	 * \\n The JOBGOAL module executes queries from a file and can send queries via \ref auto_MSG ...
-	 * \return true if the module has a query to send
+	 * \return true if the module has a query|reply|info to send
 	 */
 	bool has_MSG();
 	/**
-	 * \fn virtual bool auto_MSG(const uint64_t DTMS)=0;
+	 * \fn virtual bool auto_MSG(const uint64_t DTMS,JsonObject &KMD)=0;
 	 * \brief Pure virtual method launched by inherited modules
 	 * \ If module is in time-out, launches a default \ref tmsout_MSG else \ref auto_MSG
 	 * \param const uint64_t DTMS delay since the last module's query
-	 * \return bool false if nothing to send else true
+	 * \param KMD jsonObject to complete
+	 * \return @ref e_hasMsg ... to send else nothing
 	 */
-	virtual bool auto_MSG(const uint64_t DTMS)=0;
+	virtual e_hasMsg auto_MSG(const uint64_t DTMS,JsonObject &KMD)=0;
+	e_hasMsg tmsout_MSG(const uint64_t DTMS);
+	e_hasMsg popup_MSG(const uint64_t DTMS);
 	/**
 	 * \fn virtual bool complete_MSG(JsonObject & KMD)=0;
 	 * \brief Pure virtual method instantiates by inherited modules
 	 * \Completes the defaults \ref tmsout_MSG with additionnal module-specific informations
+	 * \return @ref e_hasMsg ... to send else nothing
 	 */
-	virtual bool complete_MSG(JsonObject &KMD)=0;
+	virtual e_hasMsg complete_MSG(JsonObject &KMD)=0;
 	/**
 	 * \fn virtual bool reply2pilotQ_OP(JsonObject & JOBJ)=0;
 	 * \brief For children modules, finds in map_OPmodule the operation & launchs it
 	 * \n if return true, JOBJ has to be modified to answer a new query
 	 * \n else the message will be a reply with TIK==0
 	 * \param JsonObject & JOBJ (map_OPmotors.find... first from JOBJ KMD.OP field)
-	 * \return false if rover has no query to resend to client else true
+	 * \return @ref e_hasMsg ... to send else nothing
 	 */
 	virtual bool reply2pilotQ_OP(JsonObject &JOBJ)=0;
-	bool updateATreply(JsonObject &JOBJ);
+	virtual bool updateATreply(JsonObject &JOBJ)=0;
 	String dump();
 };
 String dumpAllMODULES();

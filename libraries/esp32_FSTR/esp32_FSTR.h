@@ -10,28 +10,14 @@
 using namespace std;
 ///////////////////////////////////////////////////////////////////////
 /*
-static e_STR& operator ++(e_STR& t) {
-	if (t == e_STR::End) {
-		throw std::out_of_range("for e_STR& operator ++ (e_STR&)");
-	}
-	t = e_STR(static_cast<std::underlying_type<e_STR>::type>(t) + 1);
-	return t;
+ static e_STR& operator ++(e_STR& t) {
+ if (t == e_STR::End) {
+ throw std::out_of_range("for e_STR& operator ++ (e_STR&)");
  }
-*/
-/**
- *  \struct s_CSTR
- *  \brief enum e_STR language localized strings (infos, errors...)
- *  @var pCHAR ...Summarizes each error count
- *  @var pCHAR ...Contains the level of error (fatal, recoverable...)
- *  @var pLABEL ...Contains the string label of error
+ t = e_STR(static_cast<std::underlying_type<e_STR>::type>(t) + 1);
+ return t;
+ }
  */
-typedef struct{
-	char * pCHAR;/**< FATAL ERROR */
-    /** \brief Callback invoked upon loss of connection */
-    	char * pLABEL;
-	int16_t sTHR;/**< ljdljldjljd */
-	int16_t sCNT=0;// to count the number of usage of string unuseful !!!!
-} s_CSTR;
 #define DEF_CSTRSIZE 3072
 #define DEF_LABELSIZE 1400
 /**
@@ -44,29 +30,45 @@ typedef struct{
  *
  */
 class Langage {
-private:
+public:
+	/**
+	 *  \struct s_CSTR
+	 *  \brief enum e_STR language localized strings (infos, errors...)
+	 *  @var pCHAR ...Summarizes each error count
+	 *  @var pCHAR ...Contains the level of error (fatal, recoverable...)
+	 *  @var pLABEL ...Contains the string label of error
+	 */
+	typedef struct {
+		char *pCHAR;/**< char * to message (as printf format @ref THROWERR) */
+		char *pLABEL;/**< char * to label of error code for human readable exception*/
+		int16_t sTHR;/**< Count threshold to become a fatal error (if 0, just info message) */
+		int16_t sCNT = 0;/**< to count the number of usage of string unuseful !!!! */
+	} s_CSTR;
+	private:
 	std::vector<s_CSTR> vSTRs;
 	char buffer_CSTR[DEF_CSTRSIZE];
 	char buffer_LABEL[DEF_LABELSIZE];
-public:
-	void listDir_Old(fs::FS &fs, const char * dirname, uint8_t levels);
+	public:
+	void listDir_Old(fs::FS &fs, const char *dirname, uint8_t levels);
 	String listDir(fs::FS &fs, const char *dirname, uint8_t levels = 0);
+	String listDir2download(fs::FS &fs, const char *dirname, uint8_t levels = 0);
+	String listDir2select(fs::FS &fs, const char *dirname, uint8_t levels);
 	/**
 	 * \fn void store(const int ERRCOD)
 	 * \brief Sets \ref ok to ERRCOD
 	 * \param ERRCOD thrown error code
 	 * */
-	bool Begin(const String FILE_LANGUE) ;
-	const char * CST(const e_STR ENUM);
-	const char * LABEL(const e_STR ENUM);
+	bool Begin(const String FILE_LANGUE);
+	const char* CST(const e_STR ENUM);
+	const char* LABEL(const e_STR ENUM);
 	int16_t thr(const e_STR ENUM);
 	int16_t cnt(const e_STR ENUM);
 	void inc(const e_STR ENUM);
 };
-inline const char * Langage::CST(const e_STR ENUM){
+inline const char* Langage::CST(const e_STR ENUM){
 	return vSTRs[ENUM].pCHAR;
 }
-inline const char * Langage::LABEL(const e_STR ENUM){
+inline const char* Langage::LABEL(const e_STR ENUM){
 	return vSTRs[ENUM].pLABEL;
 }
 inline int16_t Langage::thr(const e_STR ENUM){
@@ -75,7 +77,7 @@ inline int16_t Langage::thr(const e_STR ENUM){
 inline int16_t Langage::cnt(const e_STR ENUM){
 	return vSTRs[ENUM].sCNT;
 }
-inline void Langage::inc(const e_STR ENUM) {
+inline void Langage::inc(const e_STR ENUM){
 	vSTRs[ENUM].sCNT++;
 }
 ///////////////////////////////////////////////////////////////////////

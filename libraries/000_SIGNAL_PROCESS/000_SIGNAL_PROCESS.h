@@ -1,18 +1,19 @@
 #ifndef __000_SIGNAL_PROCESS__
 #define __000_SIGNAL_PROCESS__
 //#include <esp32_LOGS.h>
-#include <Arduino.h>
+//#include <Arduino.h>
 #include <random>
 #include <ctime>
-#include <vector>
+//#include <vector>
 #include <functional>
+#include <esp32_SYS_basic.h>
 using namespace std;
 typedef struct{
 	int64_t MicroTS;
 	float Value;
 } s_Dsp;
 typedef std::function<float(const int32_t)> f_compute;
-class sigDsp {
+class sigDsp :public Core{
 private:
 	int16_t _CntSamples;
 	int64_t _MtsSample;
@@ -54,7 +55,7 @@ typedef struct{
 	uint32_t SAMPLE;
 } s_imuDsp;
 typedef std::function<void(s_imuDsp & ,const int32_t)> f_imuCalc;
-class imuDsp {
+class imuDsp :public Core{
 private:
 	int16_t _CntSamples;
 	int64_t _MtsSample;

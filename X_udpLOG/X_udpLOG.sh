@@ -2,7 +2,7 @@
 export DISPLAY=:0.0
 TITLE="UDP telemetry"
 echo -ne "\033]0;$TITLE\007"
-resize -s 46 150 > /dev/null  # resize gnome
+resize -s 63 170 > /dev/null  # resize gnome
 #sleep 1
 #wmctrl -l  # list all windows
 # Cf. http://manpages.ubuntu.com/manpages/trusty/man1/xdotool.1.html
@@ -12,7 +12,7 @@ X=`xdotool getactivewindow` #;echo $X
 #--usehints char columns & rows dimensions
 #--sync wait for executed command
 #xdotool windowsize --usehints --sync $X 148 46 # resize xdotool (unused here)
-xdotool windowmove --sync $X 2000 30
+xdotool windowmove --sync $X 350 8
 
 #cd ../KAM_000.DEBUG
 cd "/media/DEV/ROB_000/GIT_EclipseWS/X_udpLOG/Debug 2004"

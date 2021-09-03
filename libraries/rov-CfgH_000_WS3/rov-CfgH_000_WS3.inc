@@ -36,8 +36,8 @@ s_MOTORS MOTORScfg ={		//	LALALA
 		._dp	=0,		//	profondeur de moyenne (<=DEF_MOTORS_RQSIZE !!!)
 		._ki	=3.0,		//	gain intégral
 		._di	=1,		//	profondeur d'integration (<=DEF_MOTORS_RQSIZE !!!)
-		._kd	=0,		//	gain dérivé
-		._dd	=1,		//	profondeur de derivation (<=DEF_MOTORS_RQSIZE !!!)
+		._kd	=0.0,		//	gain dérivé
+		._dd	=0,		//	profondeur de derivation (<=DEF_MOTORS_RQSIZE !!!)
 		._Min	=-1.0,		//	seuil min de la consigne
 		._Max	=+1.0,		//	seuil max de la consigne
 		._RQ	=new ringQueue<pidQueueData>(DEF_MOTORS_RQSIZE,0),		//	ringQueue
@@ -47,15 +47,17 @@ s_MOTORS MOTORScfg ={		//	LALALA
 		._dp	=0,		//	profondeur de moyenne (<=DEF_MOTORS_RQSIZE !!!)
 		._ki	=3.0,		//	gain intégral
 		._di	=1,		//	profondeur d'integration (<=DEF_MOTORS_RQSIZE !!!)
-		._kd	=0,		//	gain dérivé
-		._dd	=1,		//	profondeur de derivation (<=DEF_MOTORS_RQSIZE !!!)
+		._kd	=0.0,		//	gain dérivé
+		._dd	=0,		//	profondeur de derivation (<=DEF_MOTORS_RQSIZE !!!)
 		._Min	=-1.0,		//	seuil min de la consigne
 		._Max	=+1.0,		//	seuil max de la consigne
 		._RQ	=new ringQueue<pidQueueData>(DEF_MOTORS_RQSIZE,0),		//	ringQueue
 	},
 	.leftPWM	={
-		._pinSENS	=DEF_PIN_SENSLEFT,		//	Sens de rotation
-		._pinPWM	=DEF_PIN_PWMLEFT,		//	Vitesse de rotation
+#ifdef DEF_WITHMOTORSPINS
+		._pinSENS	=vio7PIN_Lsns,		//	Sens de rotation
+		._pinPWM	=blu6PIN_Lpwm,		//	Vitesse de rotation
+#endif
 		._channel	=2,		//	Canal du timer utilisé pour le PWM
 		._resolution	=DEF_PWM_RESOLUTION,		//	Nombre de bits de résolution
 		._frequence	=1000,		//	Fréquence
@@ -64,8 +66,10 @@ s_MOTORS MOTORScfg ={		//	LALALA
 		._valueCur	=0,		//	last consigne
 	},
 	.rightPWM	={
-		._pinSENS	=DEF_PIN_SENSRIGHT,		//	Sens de rotation
-		._pinPWM	=DEF_PIN_PWMRIGHT,		//	Vitesse de rotation
+#ifdef DEF_WITHMOTORSPINS
+		._pinSENS	=gre5PIN_Rsns,		//	Sens de rotation
+		._pinPWM	=yel4PIN_Rpwm,		//	Vitesse de rotation
+#endif
 		._channel	=0,		//	Canal du timer utilisé pour le PWM
 		._resolution	=DEF_PWM_RESOLUTION,		//	Nombre de bits de résolution
 		._frequence	=1000,		//	Fréquence

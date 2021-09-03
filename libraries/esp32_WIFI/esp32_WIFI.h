@@ -4,6 +4,7 @@
 class c_myWIFI{
 public:
 	void Close();
+	void Status();
 };
 ///////////////////////////////////////////////////////////////////////
 void WiFiEvents(WiFiClass &WiFi);

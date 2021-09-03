@@ -5,17 +5,17 @@ using namespace std;
 /**
  * \class Synchro
  */
-Synchro::Synchro(Flow *FLOW, const s_TIMEMS MOD_CFG,  int8_t* DBGMAX) :
+Synchro::Synchro(c_myFlow *FLOW, const s_TIMEMS MOD_CFG,  int8_t* DBGMAX) :
 	Module(FLOW, MOD_CFG.MOD, DBGMAX){
 	map_OPsynchro = { { DEF_OP_SYNC, &Synchro::mOP_Synchro } };
 }
 //---------------------------------------------------------------------
-bool Synchro::auto_MSG(const uint64_t DTMS){
-	return false;
+e_hasMsg Synchro::auto_MSG(const uint64_t DTMS,JsonObject &KMD){
+	return e_hasMsg::No;
 }
 //---------------------------------------------------------------------
-bool Synchro::complete_MSG(JsonObject &KMD){
-	return true;
+e_hasMsg Synchro::complete_MSG(JsonObject &KMD){
+	return e_hasMsg::Full;
 }
 //---------------------------------------------------------------------
 bool Synchro::reply2pilotQ_OP(JsonObject &JOBJ){

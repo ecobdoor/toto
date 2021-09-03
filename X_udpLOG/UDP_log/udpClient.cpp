@@ -10,7 +10,7 @@ using namespace std;
 
 socketUDPclient::socketUDPclient(const std::string NAME, const string IP,
 		const int PORT, uint16_t TIMEOUT,const int dbgLvlMax ) :
-			socketUDP(NAME, AF_INET, SOCK_DGRAM, 0, TIMEOUT) {
+	socketUDP(NAME, AF_INET, SOCK_DGRAM, 0, TIMEOUT) {
 //	socketUDP(NAME, AF_INET, SOCK_STREAM, 0, TIMEOUT) {
 	try {
 	} catch (std::exception const& e) {
@@ -26,7 +26,7 @@ socketUDPclient::socketUDPclient(const std::string NAME, const string IP,
 	_servaddr.sin_port = htons(PORT);
 	_servaddr.sin_addr.s_addr = inet_addr(IP.c_str()); //INADDR_ANY;
 	*/
-//	__DEBUG_(4, "~", " :%s connect to %s:%i\n", _name.c_str(), IP.c_str(),PORT);
+//	__DEBUG _(4, "~", " :%s connect to %s:%i\n", _name.c_str(), IP.c_str(),PORT);
 }
 /*
 void socketUDPclient::clear() {

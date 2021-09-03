@@ -1,17 +1,21 @@
+/// @file
+// @formatter:off
 #ifdef ESP8266
-#include <Updater.h>
-#include <ESP8266mDNS.h>
+	#include <Updater.h>
+	#include <ESP8266mDNS.h>
 #else
-#include <Update.h>
-#include <ESPmDNS.h>
+	#include <Update.h>
+	#include <ESPmDNS.h>
 #endif
+// @formatter:on
 #include "000_Rover_webServer.h"
 #include "esp32_LOGS.h"
 #include "esp32_FSTR.h"
 #include "SPIFFS.h"
 #include "rov.CONTEXT.h"
 #include "000_WSCHK.h"
-/** @file */
+#include "rov-Kmds_000_WS3.h"
+///////////////////////////////////////////////////////////////////////
 s_uploadControl upCtrl = {
 	.content_len = 0,
 	.progress_len = 0,
@@ -93,7 +97,9 @@ String contentType(const String filname){
 		return "text/css";
 	else if (ext == "ICO")
 		return "image/x-icon";
-	else if (ext == "JPG")
+	else if (ext == "gif")
+		return "image/gif";
+	else if ((ext == "JPG") || (ext == "jpg"))
 		return "image/jpeg";
 	else if (ext == "JS")
 		return "text/javascript";
@@ -233,6 +239,65 @@ void unlock(const char *PAGE){
 	reqCnt--;
 	_SERIAL_0("\n<%2i request %s", reqCnt, PAGE);
 }
+
+bool Referer(AsyncWebServerRequest *request){
+	/*
+	 String ref = "Referer";
+	 if (!request->hasHeader(ref))
+	 return false;
+	 AsyncWebHeader *referer = request->getHeader(ref);
+	 request->addHeader("Access-Control-Allow-Origin", "http://192.168.13.12:3001");
+	 //	request->addHeader("Access-Control-Allow-Origin", "127.0.0.1:3001");
+	 request->addHeader("Access-Control-Allow-Credentials", "true");
+	 AsyncWebServerResponse *response;
+	 response = request->beginResponse(200, "text/plain", shouldReboot ? "OK" : "FAIL");
+	 response->addHeader("Connection", "close");
+	 request->send(response);
+	 */
+	return true;
+}
+/*
+ if(request->hasHeader(WS_STR_PROTOCOL)){
+ AsyncWebHeader* protocol = request->getHeader(WS_STR_PROTOCOL);
+ BDOOR_protocol=protocol->value();
+ response->addHeader(WS_STR_PROTOCOL, protocol->value());
+ }
+ else
+ BDOOR_protocol="---";
+ ///////////////////////////////////////////////////////////////////////
+ request->send(response);
+
+ */
+/**
+ * @fn bool webInit(AsyncWebServer &server,	AsyncWebSocket &webSokSrv, AwsEventHandler onWSMessage)
+ * @brief Launches the web server
+ *
+ * Installs CORS cross origin to support interface calls remote pilot
+ * @n addHeader("Access-Control-Allow-Origin", "http://192.168.13.12:3001");
+ * @n addHeader("Access-Control-Allow-Credentials", "true");
+ * @n
+ * @n Responds to the queries below:
+ * - /favicon.ico (pilot browser tab icon)
+ * - / (pilot browser admin page vs index.html)
+ * - /pil.html (pilot browser page)
+ * - /pil.css (pilot browser style)
+ * - /pil.js (pilot javascript script)
+ * - /CENTER.jpg (pilot browser page background image)
+ * - /EMERGENCY.gif (image of the emergency stop button on the pilot browser page)
+ * -
+ * - /update (OTA application form)
+ * - /doUpdate (OTA application upgrading)
+ * - /upload (upload form)
+ * - /doUpload (uploading)
+ * - /listFiles (spiffs files list)
+ * - /workFiles (avalaible jobs to run in javascript select)
+ * -
+ *
+ * @param server asynchronous TCP web server
+ * @param webSokSrv web socket server
+ * @param onWSMessage web socket listener for incoming messages
+ * @return true
+ */
 bool webInit(AsyncWebServer &server,
 	AsyncWebSocket &webSokSrv, AwsEventHandler onWSMessage){
 	static int8_t &this_DebugLVL = *registerFCT(e_tasks::SERV, "Serv",
@@ -250,15 +315,13 @@ bool webInit(AsyncWebServer &server,
 	server.on("/update", HTTP_GET, [](AsyncWebServerRequest *request){
 		handleUpdate(request);
 	});
-	server.on("/doUpdate", HTTP_POST,
-		[](AsyncWebServerRequest *request){
-			_SERIAL_0("++++++++++++");
-		},
-		[](AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data,
-			size_t len, bool final){ //SPIFFS.end();
-			handleDoUpdate(request, filename, index, data, len, final);
-		}
-	);
+	server.on("/doUpdate", HTTP_POST, [](AsyncWebServerRequest *request){
+		_SERIAL_0("++++++++++++");
+	},
+	[](AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data,
+		size_t len, bool final){ //SPIFFS.end();
+		handleDoUpdate(request, filename, index, data, len, final);
+	});
 //	UPLOAD ------------------------------------------------------------
 	server.on("/upload", HTTP_GET, [](AsyncWebServerRequest *request){
 		dumpHeaders(request);
@@ -287,104 +350,134 @@ bool webInit(AsyncWebServer &server,
 		upCtrl.progress_len = index + len;
 		handleDoUpload(request, filename, index, data, len, final);
 	});
-//	DONWLOAD ----------------------------------------------------------
+//	DONWLOAD ------------------------------------------------------
 	server.on("/listFiles", HTTP_GET, [](AsyncWebServerRequest *request){
-		request->send(200, "text/html", Lang.listDir(SPIFFS, "/", 0));
+		dumpHeaders(request);
+		request->send(200, "text/html", Lang.listDir2download(SPIFFS, "/", 0));
+	});
+//	CHOOSE WORK FILE ----------------------------------------------
+	server.on("/workFiles", HTTP_GET, [](AsyncWebServerRequest *request){
+		_SERIAL_0("\nworkFiles request");
+		dumpHeaders(request);
+		String f = Lang.listDir2select(SPIFFS, "/", 0);
+		//Serial.printf("\n[%s]", f.c_str());
+		request->send(200, "application/json", f);
+	});
+//	DEBUG LEVELS --------------------------------------------------
+	server.on("/jsonCONTEXT", HTTP_GET, [](AsyncWebServerRequest *request){
+		_SERIAL_0("\njsonCONTEXT request");
+		dumpHeaders(request);
+		String f = CTX.jsonCONTEXT();
+		//Serial.printf("\n[%s]", f.c_str());
+		request->send(200, "application/json", f);
 	});
 //	PAGES -------------------------------------------------------------
 	server.on("/bib-Mod.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/bib-Mod.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/bib-Mod.js", "text/javascript");
 		unlock("/bib-Mod.js");
 	});
 	server.on("/bib-Mod_util.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/bib-Mod_util.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/bib-Mod_util.js", "text/javascript");
 		unlock("/bib-Mod_util.js");
 	});
 	server.on("/bib-Util.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/bib-Util.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/bib-Util.js", "text/javascript");
 		unlock("/bib-Util.js");
 	});
 //		HOME PAGE & ICONE
 	server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/favicon.ico");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/favicon.ico", "text/html");
 		unlock("/favicon.ico");
 	});
-	server.on("/pil.css", HTTP_GET, [](AsyncWebServerRequest *request){
-		lock("/pil.css");
-		request->send(SPIFFS, "/pil.css", "text/css");
-		unlock("/pil.css");
-	});
 	server.on("/PILOTE", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil.html");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil.html", "text/html");
 		unlock("/pil.html");
 	});
 	server.on("/pil-APP_init.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-APP_init.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-APP_init.js", "text/javascript");
 		unlock("/pil-APP_init.js");
 	});
 	server.on("/pil-APP_run.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-APP_run.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-APP_run.js", "text/javascript");
 		unlock("/pil-APP_run.js");
 	});
 	server.on("/pil-Canvas.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Canvas.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Canvas.js", "text/javascript");
 		unlock("/pil-Canvas.js");
 	});
 	server.on("/pil-Canvas2.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Canvas2.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Canvas2.js", "text/javascript");
 		unlock("/pil-Canvas2.js");
 	});
 	server.on("/pil-CFG.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-CFG.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-CFG.js", "text/javascript");
 		unlock("/pil-CFG.js");
 	});
 	server.on("/pil-CfgJS(000_WS3).js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-CfgJS(000_WS3).js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-CfgJS(000_WS3).js", "text/javascript");
 		unlock("/pil-CfgJS(000_WS3).js");
 	});
 	server.on("/pil-Dialogs.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Dialogs.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Dialogs.js", "text/javascript");
 		unlock("/pil-Dialogs.js");
 	});
 	server.on("/pil-Joystick.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Joystick.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Joystick.js", "text/javascript");
 		unlock("/pil-Joystick.js");
 	});
 	server.on("/pil-Slots.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Slots.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Slots.js", "text/javascript");
 		unlock("/pil-Slots.js");
 	});
 	server.on("/pil-Socket.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Socket.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Socket.js", "text/javascript");
 		unlock("/pil-Socket.js");
 	});
 	server.on("/pil-Tpid.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/pil-Tpid.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/pil-Tpid.js", "text/javascript");
 		unlock("/pil-Tpid.js");
 	});
 	server.on("/TEST", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/tst.html");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/tst.html", "text/html");
 		unlock("/tst.html");
 	});
 	server.on("/tst.js", HTTP_GET, [](AsyncWebServerRequest *request){
 		lock("/tst.js");
+		dumpHeaders(request);
 		request->send(SPIFFS, "/tst.js", "text/javascript");
 		unlock("/tst.js");
 	});
@@ -393,6 +486,25 @@ bool webInit(AsyncWebServer &server,
 		request->send(SPIFFS, "/pil.js", "text/javascript");
 		unlock("/pil.js");
 	});
+	server.on("/CENTER.jpg", HTTP_GET, [](AsyncWebServerRequest *request){
+		lock("/CENTER.jpg");
+		dumpHeaders(request);
+		request->send(SPIFFS, "/CENTER.jpg", contentType("/CENTER.jpg"));
+		unlock("/CENTER.jpg");
+	});
+	server.on("/EMERGENCY.gif", HTTP_GET, [](AsyncWebServerRequest *request){
+		lock("/EMERGENCY.gif");
+		dumpHeaders(request);
+		request->send(SPIFFS, "/EMERGENCY.gif", contentType("/EMERGENCY.gif"));
+		unlock("/EMERGENCY.gif");
+	});
+	/*
+	 server.on("/three.js", HTTP_GET, [](AsyncWebServerRequest *request){
+	 lock("/three.js");
+	 request->send(SPIFFS, "/three.js", "text/javascript");
+	 unlock("/three.js");
+	 });
+	 */
 	/*
 	 for (int i = 0; i < uries.size(); i++){
 	 server.on(uries[i].c_str(), HTTP_GET, [i](AsyncWebServerRequest *request){
@@ -401,14 +513,34 @@ bool webInit(AsyncWebServer &server,
 	 });
 	 } 
 	 */
+	server.on("/pil.css", HTTP_GET, [](AsyncWebServerRequest *request){
+		_SERIAL_0("\n@@@ /pil.css request->url().c_str()='%s'", request->url().c_str());
+		if (request->params()) {
+			AsyncWebParameter *p = request->getParam(0);
+			lock(p->value().c_str());
+			dumpHeaders(request);
+			request->send(SPIFFS, p->value(), contentType(p->value()));
+			unlock(p->value().c_str());
+		} else {
+			lock("/pil.css");
+			request->send(SPIFFS, "/pil.css", "text/css");
+			unlock("/pil.css");
+		}
+	});
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-		dumpHeaders(request);
+		if (WSA.closeAllWSX())
+			_SERIAL_0("\n@@@ WS server closes all sockets");
+		DETACH(P_imuISR_); // before http client !!!!!
+		//dumpHeaders(request);
 		_SERIAL_0("\n****************************");
 		//	 https://techtutorialsx.com/2017/12/17/esp32-arduino-http-server-getting-query-parameters/
 		int paramsNr = request->params();
 		if (paramsNr == 0) {
-			_SERIAL_0("\n\tNo parameter => send \"index.html\"");
+			myKMDS.push("Z1000"); // to delay 1 seconds
+			myKMDS.push("IA"); // attach_ISR()
+			//_SERIAL_0("\n\tNo parameter => send \"index.html\"");
 			lock("/index.html");
+			dumpHeaders(request);
 			request->send(SPIFFS, "/index.html", "text/html", false, processor);
 			unlock("/index.html");
 		} else {
@@ -417,33 +549,75 @@ bool webInit(AsyncWebServer &server,
 				_SERIAL_0("\n\t%i:%s\t=[%s]", i, p->name().c_str(), p->value().c_str());
 			}
 			AsyncWebParameter *p = request->getParam(0);
-			if (p->name() == "p")
-				_SERIAL_0("\n\t0) param `p` => send \"%s\"", p->value().c_str());
-			c_linkISR::detach_ISR(); // before http client !!!!!
-			extern QueueHandle_t inKMDSqueue;
-			s_kmdITM item;
-			strcpy(item.kmdsMSG, "IA2000"); // attach_ISR() after 2 seconds
-			//xQueueSend(inKMDSqueue, &item, 0);
+			if (p->name() == "p") {
+//				_SERIAL_0("\n\t0) param `p` => send \"%s\"", p->value().c_str());
+				myKMDS.push("Z5000"); // to delay 3 seconds
+				myKMDS.push("IA"); // attach_ISR()
 
+				lock(p->value().c_str());
+				dumpHeaders(request);
+				request->send(SPIFFS, p->value(), contentType(p->value()), false, processor);
+				unlock(p->value().c_str());
+			}
+		else if (p->name() == "download") {
+//				_SERIAL_0("\n\t0) param `p` => send \"%s\"", p->value().c_str());
+			myKMDS.push("Z5000"); // to delay 3 seconds
+			myKMDS.push("IA"); // attach_ISR()
 
-			lock("p->value()");
-			if(closeAllWSX())
-				_SERIAL_0("\n@@@ WS server closes all sockets");
-			request->send(SPIFFS, p->value(), contentType(p->value()), false, processor);
-			unlock("p->value()");
+			lock(p->value().c_str());
+			dumpHeaders(request);
+			request->send(SPIFFS, p->value(), contentType(p->value()), true);
+			unlock(p->value().c_str());
 		}
-		_SERIAL_0("\n----------------------------");
-		//			request->send(200, "text/plain", "message received");
-	});
+		else if (p->name() == "remove") {
+			SPIFFS.remove(p->value());
+		}
+	}
+//			request->send(200, "text/plain", "message received");
+	_SERIAL_0("\n----------------------------");
+}	);
 //	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {request->redirect("/update");});
 //	NOTFOUND ----------------------------------------------------------
 	server.onNotFound([](AsyncWebServerRequest *request){
-		request->send(404, "text/html", "ERR 404 FILE NOT FOUND");
+		if (request->method() == HTTP_OPTIONS) { //preflight CORS (unused for GET method)
+			request->send(200);
+		}
+		else {
+			request->send(404, "text/html", "ERR 404 FILE NOT FOUND");
+//		 request->send(404);
+		}
 	});
 //	WEBSOCKET ---------------------------------------------------------
 	webSokSrv.onEvent(onWSMessage);
 	server.addHandler(&webSokSrv);
 //	BEGIN -------------------------------------------------------------
+	/**
+	 * Add CORS headers
+	 * if addHeader("Access-Control-Allow-Origin", "*")
+	 * 		needs addHeader("Access-Control-Allow-Credentials", "false")
+	 * 		and xhttp.withCredentials = false in node_pil.js jsonXHR(REQUEST)
+	 * else if addHeader("Access-Control-Allow-Origin", "http://...")
+	 * 		needs addHeader("Access-Control-Allow-Credentials", "true")
+	 * 		and xhttp.withCredentials = true in node_pil.js jsonXHR(REQUEST)
+	 */
+//
+	/*
+	 DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "http://10.42.0.1:3001");
+	 //	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "http://localhost:3001");
+	 //	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "127.0.0.1:3001");
+
+	 DefaultHeaders::Instance().addHeader(
+	 String("Vary"),
+	 String("Origin"));
+	 DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
+	 DefaultHeaders::Instance().addHeader("Access-Control-Allow-Credentials", "true");
+	 */
+// @formatter:off
+	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+	DefaultHeaders::Instance().addHeader("Access-Control-Allow-Methods","GET, POST, PATCH, DELETE, OPTIONS");
+	DefaultHeaders::Instance().addHeader(String("Access-Control-Allow-Origin"),String("http://192.168.13.67:3001"));
+	//DefaultHeaders::Instance().addHeader(String("Access-Control-Allow-Credentials"),String("true"));
+// @formatter:on
 	server.begin();
 #ifdef ESP32
 	Update.onProgress(printProgress);

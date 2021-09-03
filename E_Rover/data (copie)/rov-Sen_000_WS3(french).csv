@@ -1,0 +1,94 @@
+____LINE_40_EQUAL____,//;0;'=======================================
+____LINE_40_MINUS____,//;0;----------------------------------------
+//_EAI_SOCKTYPE,//;1;socket type not recognized
+//ARG_NULLPTR,//;1;Parameters null pointer
+//BUF_WRITE_SIZE_ERR,//;1;missing char when buffer sent
+//CHR_READ_TIMEOUT,//;1;timeout of char reception
+//CLI_CANT_WAITKMD,//;1;client can't wait a command
+//CONDITION_TIMEOUT,//;1;condition time out
+//DSP_ERR_CMD,//;1;"#### sigDsp::Begin ERROR commande inconnue \""""""""""""""""%s\"""""""""""""""""""""""""""""""
+//ERR_SND_NOTIFY,//;1;#### TIMEOUT on NOTIFY SENDER (%i ms)
+//ERR_SND_TIMOUT,//;1;#### ERROR on PWSX canSend (wait for %i ms)!
+//ESP_RESTART,//;0;#### ESP Restarting...
+//JCT_ACKCLI_ERROR,//;1;client acknowledge error
+//JCT_ACKSRV_ERROR,//;1;server acknowledge error
+//JCT_AVAILABLE_TIMEOUT,//;1;junction available timeout
+//JCT_ERROR,//;1;#### ERROR on PWSX (%s %i %s)!
+//JCT_NOT_CONNECTED,//;1;#### Junction not connected (%s)!
+//JCT_RESET_BROKEN,//;1;junction reseting broken
+//JCT_RESET_TEST,//;1;testing exception management
+//JCT_TYPE_UNKNOWN,//;1;junction %i type unknown
+//KMD_FORBIDDEN,//;1;v_waitKmd unexpected command
+//KMD_FORMAT_ERR,//;1;KMD packet length unexpected
+//MAT_ACK_ERR,//;1;acknowledge error on read Mat
+//MAT_NULLPTR,//;1;Mat address null pointer
+//MAT_PACKET_ERR,//;1;packet error on read Mat
+//MAT_SIZE_ERR,//;1;no match size on read Mat
+//PAK_ID_READ_ERROR,//;1;packet ID read error
+//PAK_ID_WRITE_ERROR,//;1;packet ID write error
+//SOK_SET_RCV_BUFSIZ,//;0;S--error--D
+//SOK_SET_RCV_TIMOUT,//;0;setting receive timeout
+//SOK_SET_SND_BUFSIZ,//;0;setting sender buffer size
+//SRV_CANT_PASSKMD,//;1;server can't pass a command
+//UID_FORBIDDEN,//;1;v_waitKmd unexpected UID
+BAD_ALLOC,//;1;HEAP bad alloc bytes:%i>%s
+BUF_UNDERSIZED,//;1;BUFFER undersized (size:%i, count:%i)
+BUF_WRITE_NOCHAR,//;1;no buffer char sent
+DISP_NOTMAPYET,//;1;KMD dispatchers not mapped yet
+DSP_ERR_SPLIT,//;1;"#### sigDsp::Begin ERROR splitting \""""""""""""""""%s\"""""""""""""""""""""""""""""""
+EEPROM_,//;0;==== EEPROM CONTEXT CHECKING %s
+EEPROM_FAIL,//;0;	%s FAILS to begin
+EEPROM_OK_LOAD,//;0;	%s loaded on %s (%llu).
+EEPROM_OK_SAVE,//;0;	%s saved on %s (%llu).
+EEPROM_OK,//;0;	%s OK at begining
+FATAL_ERR_EXAMPLE,//;1;my fatal error example
+FIFO_OVERFLOW,//;1;Queue overflow tik(%i) µTS(%llu)
+FILE_NOT_FOUND,//;3;File ‘%s’ not found
+FLOW_ACKERR,//;1;Flow acknoledge error TIK ‘%i’ not found
+HEAP_STAT,//;0; HEAP bytes %s
+I2C_,//;0;==== I2C MASTER %s
+I2C_CLOCK,//;0;	I²C clock frequency %i Hz.
+I2C_DONTSTARTS,//;1;	I²C begins error
+I2C_MISSING,//;1;	I²C resources missing (%i found)!
+IDLE_TIMEOUT,//;1;wait for idle time out
+IMU_I2CERR,//;1;Can’t connect I²C to MPU at %#x (should be 0x71)
+JSON_ERR_DESERIALIZE,//;1;JSON deserializing '%s'
+KERN_,//;0;GLOBAL SYSTEM CHECKING %s
+KERN_ARDUINOJSON_USE_LONG_LONG,//;0;'%+17i' : ARDUINOJSON_USE_LONG_LONG
+KERN_configUSE_STATS_FORMATTING_FUNCTIONS,//;0;'%+17i' : configUSE_STATS_FORMATTING_FUNCTIONS
+KERN_configUSE_TRACE_FACILITY,//;0;'%+17i' : configUSE_TRACE_FACILITY
+KERN_CPP,//;0;'%+17i' : C++ versioning
+KERN_ESP_TASK_MAIN_PRIO,//;0;'%+17i' : ESP_TASK_MAIN_PRIO main   (stack %i bytes)
+KERN_ESP_TASK_PRIO_MAX,//;0;'%+17i' : ESP_TASK_PRIO_MAX
+KERN_ESP_TASK_TCPIP_PRIO,//;0;'%+17i' : ESP_TASK_TCPIP_PRIO tcpip (stack %i bytes)
+KERN_ESP_TASK_TIMER_PRIO,//;0;'%+17i' : ESP_TASK_TIMER_PRIO timer (stack %i bytes)
+KERN_ESP_TASKD_EVENT_PRIOevent,//;0;'%+17i' : ESP_TASKD_EVENT_PRIOevent (stack %i bytes)
+KERN_ESP_TASKS,//;0;	Checking esp_task.h to set the APP tasks priorities:
+KERN_INCLUDE_vTaskDelay,//;0;'%+17i' : INCLUDE_vTaskDelay
+KERN_portTICK_PERIOD_MS,//;0;'%+17i' : portTICK_PERIOD_MS ms
+KERN_sizeof_t_jsonDoc,//;0;'%+17i' : sizeof(t_jsonDoc)
+KERN_WS_MAX_QUEUED_MESSAGES,//;0;'%+17i' : WS_MAX_QUEUED_MESSAGES
+MOD_DTMINUS,//;5;Module %s (DT<0) %lli=(%llu-%llu) negative time out ?
+MOD_TYPE_ERR,//;1;Module ‘%s’ unknown
+PID_FOOT,//;0;-------------------+---------------------+---------------------+---------------------+---------------------+--------
+PID_HEAD,//;0;----TMS------  I * +-----S--error--D-----+-----S--integ--D-----+-----S--deriv--D-----+-----S---out---D-----+-MSG----
+PINS_ISRIMU,//;0;	Pin %2i (INPUT_PULLDOWN) IMU interrupt rising up
+PINS_LED,//;0;==== PINS & LED %s
+PINS_OUTTEST,//;0;	Pin %2i (Board blue led) ON during wave test of output pins
+STR_SIZE,//;0; occupying %i/%i bytes (labels %i/%i bytes).
+TEST_FATAL,//;1;Exemple d’erreur fatale
+TEST_INFO,//;0;Exemple d’informations
+TEST_NO_ERROR,//;0;Pas d'erreur (?)
+TEST_RECOV,//;1;Exemple d’erreur récupérable
+WIFI_APIP,//;0;'%17s' : Access Point IP
+WIFI_ATT_DB,//;0;'%17i' : attenuation (dB)
+WIFI_CONNECTING,//;0;	Connecting to WiFi...
+WIFI_LOCALIP,//;0;'%17s' : local IP
+WIFI_MAC,//;0;'%17s' : MAC address
+WIFI_POWER,//;0;'%17i' : Wifi AP power
+WSX_,//;0;==== WEB SOCKETS %s
+WSX_CREATEERR,//;1;Open websocket error (already too much...)
+WSX_ERR_CANTSEND,//;1;WS server can’t send %s
+WSX_NOT_FOUND,//;1;websocket pointer not found : evt(%s) arg(%i) len(%i) data(%s)
+WSX_SND_NOTCONNECT,//;1;#### ERROR on PWSX not connected %s!
+WSX_PROTO_UNREACHABLE,//;1;PROTOCOL '%s' unreachable [%s]

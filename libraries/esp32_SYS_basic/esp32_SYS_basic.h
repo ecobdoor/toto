@@ -8,7 +8,7 @@
 //#include "esp32_GOODIES.h"
 /*
  Dans .h pour espace de noms (C & pas C++)!!
- BDOOR_protocol
+ BDOOR_ protocol
  */
 using namespace std;
 #define pi  3.141592653589793238462643383279502884f
@@ -45,10 +45,10 @@ int64_t Int64(const char *str);
 int Int(const char *str);
 float Float(const char *str);
 inline bool isDigit(const char D){
-	return (48 <= D) && (D <= 57);
+return (48 <= D) && (D <= 57);
 }
 inline uint8_t d09(const char D){
-	return D - 48;
+return D - 48;
 }
 //=============================================================================
 /**
@@ -62,20 +62,16 @@ inline uint8_t d09(const char D){
  */
 //-----------------------------------------------------------------------------
 void SplitOnLast(const std::string str, std::string &first, std::string &second,
-	const char *charPatterns);
+const char *charPatterns);
 char splitString(vector<String> &ARGS, const String &CHN, const char *SEPARATORS = ":,",
-	const bool debug = false);
-void SPrintF(const uint16_t SIZE, int16_t &CNT, char *BUFFER, const char *FORMAT, ...);
-void VSPrintF(const uint16_t SIZE, int16_t &CNT, char *BUFFER, const char *FORMAT, va_list *ARGS);
+const bool debug = false);
 //String datim(uint64_t TMS, const int SHIFTHOURS = 1);
 inline String SBOOL(const bool BOOLEAN){
-	if (BOOLEAN)
-		return "Yes";
-	else
-		return "No";
+if (BOOLEAN)
+	return "Yes";
+else
+	return "No";
 }
-void VSPRINTF_BUFFER(const int8_t LVL, const char *FORMAT,
-	va_list *ARGS, int16_t SIZE, int16_t &CNT, char *BUFFER);
 /**
  * \brief      Converts an unsigned 64 bits integer to a String
  * \param    VAL unsigned long long int result
@@ -83,24 +79,51 @@ void VSPRINTF_BUFFER(const int8_t LVL, const char *FORMAT,
  */
 String SUI64(const uint64_t VAL);
 /**
+ * @fn uint64_t UI64S(const String CHN)
  * \brief      Converts a String to a unsigned 64 bits integer
  * \details    REMARK no consistency check is performed on the input string
  * \param    CHN	String to convert
  * \return   unsigned long long int result
  */
 uint64_t UI64S(const String CHN);
+uint32_t UI32S(const String CHN);
+///////////////////////////////////////////////////////////////////////
 /**
- * \class DbgLog
+ * \class Core
  */
 class Core {
 protected:
-	const char *class_Type;
-	int8_t &this_DebugLVL;
-	public:
-	Core(const char *classType, int8_t *dbgLvlMax);
-	void set_dbgLVL(const int8_t LVL);
-	int8_t get_dbgLVL();
+const char *class_Type;
+int8_t &this_DebugLVL;
+
+public:
+Core(const char *classType, int8_t *dbgLvlMax);
+void set_dbgLVL(const int8_t LVL);
+/**
+ * @fn virtual bool On_Error(const e_STR ERRCOD)
+ * @brief To be overload by each Core inherited class
+ * @param ERRCOD @ref Langage
+ * @return true if the error is resolved, eslse false to default except management
+ */
+virtual bool On_Error(const e_STR ERRCOD){
+	return false;
+}
+;
+int8_t get_dbgLVL();
+int8_t& adr_dbgLVL();
 };
+inline void Core::set_dbgLVL(const int8_t LVL){
+this_DebugLVL = LVL;
+}
+inline int8_t Core::get_dbgLVL(){
+return this_DebugLVL;
+}
+inline int8_t& Core::adr_dbgLVL(){
+return this_DebugLVL;
+}
+///////////////////////////////////////////////////////////////////////
 extern const char blackNum[10][4];
 extern const char whiteNum[10][4];
+//extern const char lowerAlpha[26][4];
+//extern const char upperAlpha[26][4];
 #endif

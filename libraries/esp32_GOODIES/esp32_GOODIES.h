@@ -22,7 +22,8 @@
 	}while(0)
 #endif
 ///////////////////////////////////////////////////////////////////////
-bool SETUP_ESPINFO();
+bool SETUP_ESPINFO(const size_t SIZE, int16_t &CNT, char *BUFFER);
+void benchMark(const size_t SIZE, int16_t &CNT, char *BUFFER);
 /**
  * @fn void halt(const char *REASON, ...);
  * @brief printf(REASON, args) & goes to deep sleep state
@@ -68,6 +69,7 @@ void sprint(const char *FORMAT, ...);
  * @return human readable date & time
  */
 String datim(uint64_t TMS, const int SHIFTHOURS = 1);
+String heapState();
 #define _DEBUG_Motion_(LEVEL,FORMAT,...) \
 	do { \
 		if(LEVEL <= motionCtx.dbgLevel()) \
@@ -83,6 +85,20 @@ String datim(uint64_t TMS, const int SHIFTHOURS = 1);
 	}while(0)
 #else
 #define _DEBUG_Others_(LEVEL,FORMAT,...)
+#endif
+///////////////////////////////////////////////////////////////////////
+/// https://stackoverflow.com/questions/37473/how-can-i-assert-without-using-abort
+#define WITH_ASSERT
+#ifdef WITH_ASSERT
+#define ASSERT(expr) \
+	do { \
+		if (!(expr)) { \
+			halt("ASSERT `%s` FAILS in %s\n\tat line %d of %s.", \
+				#expr,__PRETTY_FUNCTION__,__LINE__,__FILE__);             \
+		} \
+	}while(0)
+#else
+#define ASSERT(...)
 #endif
 ///////////////////////////////////////////////////////////////////////
 #endif

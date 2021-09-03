@@ -9,8 +9,8 @@
  
  Library may be used freely and without limit with attribution.
  
-*/
-  
+ */
+
 #ifndef __000_MPU9250__
 #define __000_MPU9250__
 
@@ -45,14 +45,14 @@
 #define SELF_TEST_Z_GYRO 0x02
 
 /*#define X_FINE_GAIN      0x03 // [7:0] fine gain
-#define Y_FINE_GAIN      0x04
-#define Z_FINE_GAIN      0x05
-#define XA_OFFSET_H      0x06 // User-defined trim values for accelerometer
-#define XA_OFFSET_L_TC   0x07
-#define YA_OFFSET_H      0x08
-#define YA_OFFSET_L_TC   0x09
-#define ZA_OFFSET_H      0x0A
-#define ZA_OFFSET_L_TC   0x0B */
+ #define Y_FINE_GAIN      0x04
+ #define Z_FINE_GAIN      0x05
+ #define XA_OFFSET_H      0x06 // User-defined trim values for accelerometer
+ #define XA_OFFSET_L_TC   0x07
+ #define YA_OFFSET_H      0x08
+ #define YA_OFFSET_L_TC   0x09
+ #define ZA_OFFSET_H      0x0A
+ #define ZA_OFFSET_L_TC   0x0B */
 
 #define SELF_TEST_X_ACCEL 0x0D
 #define SELF_TEST_Y_ACCEL 0x0E    
@@ -198,41 +198,55 @@
  * The MPU9250 is configured to run with at 100 Hz on an hardware interrupt.
  * \n It furnishes 3D acceleration, gyroscopic & magnetic field informations
  */
+#include <functional>
+/*
+ typedef struct {
+ float x;
+ float y;
+ float z;
+ uint16_t remaining;
+ } s_magProgress;
+ */
+typedef std::function<void(volatile bool*, const bool,
+	const int16_t, const int16_t, const int16_t, const String&)> f_magProgress;
 
 class MPU9250
 {
-  public: 
-  MPU9250(uint8_t MPUNUM);
-  uint8_t getMPU9250ID();
-  uint8_t getAK8963CID();
-  void resetMPU9250();
-  void initMPU9250(uint8_t Ascale, uint8_t Gscale, uint8_t sampleRate);
-  uint16_t getFIFOCount( );
-  void initAK8963Slave(uint8_t Mscale, uint8_t Mmode, float * destination);
-  float getAres(uint8_t Ascale);
-  float getGres(uint8_t Gscale);
-  float getMres(uint8_t Mscale);
-  void magcalMPU9250(float * dest1, float * dest2,int16_t * mag_min,int16_t * mag_max);
-  void calibrateMPU9250(float * dest1, float * dest2);
-  void SelfTest(float * destination);
-  void readMPU9250Data(int16_t * destination);
-  void readAccelData(int16_t * destination);
-  void readGyroData(int16_t * destination);
-  bool checkNewAccelGyroData();
-  bool checkNewMagData();
-  void readMagData(int16_t * destination);
-  int16_t readGyroTempData();
-  void gyromagSleep();
-  void gyromagWake(uint8_t Mmode);
-  void accelWakeOnMotion();
-  bool checkWakeOnMotion();
-//  void MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
-  private:
-  uint8_t _MPUnum;
-  float _aRes;
-  float _gRes;
-  float _mRes;
-  uint8_t _Mmode;
+public:
+	MPU9250(uint8_t MPUNUM);
+	uint8_t getMPU9250ID();
+	uint8_t getAK8963CID();
+	void resetMPU9250();
+	void initMPU9250(uint8_t Ascale, uint8_t Gscale, uint8_t sampleRate);
+	uint16_t getFIFOCount();
+	void initAK8963Slave(uint8_t Mscale, uint8_t Mmode, float *destination);
+	float getAres(uint8_t Ascale);
+	float getGres(uint8_t Gscale);
+	float getMres(uint8_t Mscale);
+	uint16_t magcalSampleCount(const int16_t samples = 0);
+	void magcalMPU9250(float *dest1, float *dest2, int16_t *mag_min, int16_t *mag_max,
+		const uint16_t sample_count, f_magProgress PROGRESS = nullptr, volatile bool *browserReady =
+			nullptr);
+	uint16_t calibrateMPU9250(float *dest1, float *dest2);
+	void SelfTest(float *destination);
+	void readMPU9250Data(int16_t *destination);
+	void readAccelData(int16_t *destination);
+	void readGyroData(int16_t *destination);
+	bool checkNewAccelGyroData();
+	bool checkNewMagData();
+	void readMagData(int16_t *destination);
+	int16_t readGyroTempData();
+	void gyromagSleep();
+	void gyromagWake(uint8_t Mmode);
+	void accelWakeOnMotion();
+	bool checkWakeOnMotion();
+	//  void MadgwickEXE(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz);
+private:
+	uint8_t _MPUnum;
+	float _aRes;
+	float _gRes;
+	float _mRes;
+	uint8_t _Mmode;
 };
 
 #endif //__000_MPU9250__

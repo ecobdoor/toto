@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html>
+<!--
+	Selectors & pseudo-class
+	https://www.w3schools.com/cssref/css_selectors.asp
+	https://www.w3schools.com/cssref/trysel.asp
+-->
+
+<head>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta charset="UTF-8" />
+	<title>PILOT-BASE-ROVER 0.00</title>
+	<link rel="stylesheet" type="text/css" href="pil.css" />
+	<style type="text/css">
+	</style>
+	<!--
+
+	<script type="text/javascript" src="toto.js"></script>
+	<script type="text/javascript" src="Jobgoals.js"></script>
+	<script type="text/javascript" src="pil-CFG_old.js"></script>
+-->
+	<script type="text/javascript" src="pil.js"></script>
+</head>
+<!--***************************************************
+	NOTATIONS
+	 _XXX_	Variabkes globales
+	 _XXX 	Variables locales d'une fonction
+	 xxx 	Variables locales d'une fonction
+****************************************************-->
+<!--<body onload="Start();">-->
+
+<body>
+	<div class="kfwork">
+		<h1 style="display:inline;">Rover Pilot</h1>
+		<h3 style="display:inline;"> 1.00</h3>
+		<div class="mv2_table">
+			<table>
+				<tr>
+					<th>Module</th>
+					<th>TIMER</th>
+					<th>TIOS</th>
+					<th>EXEC</th>
+					<th>Loc</th>
+					<th>Rov</th>
+				</tr>
+				<tr>
+					<td>MOTORS</td>
+					<td>
+						<div id="divTim_MOTORS"></div>
+					</td>
+					<td>
+						<div id="divTio_MOTORS"></div>
+					</td>
+					<td>
+						<div id="divExe_MOTORS"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_MOTORS"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_MOTORS"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>Datim</td>
+					<td>
+						<div id="divTim_DATIM"></div>
+					</td>
+					<td>
+						<div id="divTio_DATIM"></div>
+					</td>
+					<td>
+						<div id="divExe_DATIM"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_DATIM"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_DATIM"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>DRIVER</td>
+					<td>
+						<div id="divTim_DRIVER"></div>
+					</td>
+					<td>
+						Attitude
+					</td>
+					<td>
+						<div id="divExe_DRIVER"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_DRIVER"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_DRIVER"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>Jobgoal</td>
+					<td>
+						<div id="divTim_JOBGOAL"></div>
+					</td>
+					<td>
+						<div id="divTio_JOBGOAL"></div>
+					</td>
+					<td>
+						<div id="divExe_JOBGOAL"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_JOBGOAL"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_JOBGOAL"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>WATCH</td>
+					<td>
+						<div id="divTim_WATCH"></div>
+					</td>
+					<td>
+						<div id="divTio_WATCH"></div>
+					</td>
+					<td>
+						<div id="divExe_WATCH"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_WATCH"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_WATCH"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>WS rover</td>
+					<td>
+						<div id="divTim_WSROV"></div>
+					</td>
+					<td>
+						<div id="divTio_WSROV"></div>
+					</td>
+					<td>
+						<div id="divExe_WSROV"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_WSROV"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_WSROV"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>WS basis</td>
+					<td>
+						<div id="divTim_WSBAS"></div>
+					</td>
+					<td>
+						<div id="divTio_WSBAS"></div>
+					</td>
+					<td>
+						<div id="divExe_WSBAS"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_WSBAS"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_WSBAS"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>Filsys</td>
+					<td>
+						<div id="divTim_FILSYS"></div>
+					</td>
+					<td>
+						<div id="divTio_FILSYS"></div>
+					</td>
+					<td>
+						<div id="divExe_FILSYS"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_FILSYS"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_FILSYS"></div>
+					</td>
+				</tr>
+				<tr>
+					<td>Leds</td>
+					<td>
+						<div id="divTim_LEDS"></div>
+					</td>
+					<td>
+						<div id="divTio_LEDS"></div>
+					</td>
+					<td>
+						<div id="divExe_LEDS"></div>
+					</td>
+
+					<td>
+						<div id="divDbgLOC_LEDS"></div>
+					</td>
+					<td>
+						<div id="divDbgROV_LEDS"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="frame" class="frameer"></div>
+		<div id="fixMen" class="fixMener">
+			<button name="button" class="emergencyBtn" type="button" onclick="RESET()"></button>
+		</div>
+		<!--
+			RIGHT CONTAINER
+		-->
+		<div id="verticalMenu" class="verticalMenuer">
+			<button id="btn_Pilot" class="bigBtn" type="button" onclick="PILOT()">PILOT</button>
+			<button name="button" class="bigBtn" type="button">CA VA</button>
+			<button name="button" class="bigBtn" type="button">2</button>
+			<button name="button" class="bigBtn" type="button">3</button>
+			<button name="button" class="bigBtn" type="button">4</button>
+			<button name="button" class="bigBtn" type="button">5</button>
+			<button name="button" class="bigBtn" type="button">6</button>
+			<button name="button" class="bigBtn" type="button">7</button>
+			<button name="button" class="bigBtn" type="button">8</button>
+		</div>
+		<!--
+			FOOT CONTAINER
+		-->
+		<div id="FOOT">
+			<div id="horizontalMenu" class="horizontalMenuer">
+				<button name="button" class="toyBtn" type="button" onclick="showViewsDefault('CENTER')">View
+					all</button>
+				<button name="button" class="toyBtn" type="button" onclick="showView('CENTER','MAP')">Map</button>
+				<button name="button" class="toyBtn" type="button"
+					onclick="showView('CENTER','ATTITUDE')">Attitude</button>
+				<button name="button" class="toyBtn Hactive" type="button"
+					onclick="showView('CENTER','MOTORS')">Motors</button>
+				<button name="button" class="toyBtn" type="button">3</button>
+				<button name="button" class="toyBtn" type="button">4</button>
+				<button name="button" class="toyBtn" type="button">5</button>
+				<button name="button" class="toyBtn" type="button">6</button>
+				<button name="button" class="toyBtn" type="button">7</button>
+				<button name="button" class="toyBtn" type="button">8</button>
+			</div>
+		</div>
+		<!--
+			CTLKMD CONTAINER
+		-->
+		<div id="CTLKMD">
+			<form onsubmit="return (envoiManualKommand(this.submited));">
+				<table>
+					<tr>
+						<td><input type="text" name="ModKmd" id="ModKmd" style="width: 130px;" /></td>
+						<td><input id="wsB" type="submit" onclick="this.form.submited=this.id;" value="BASIS"
+								style="width: 50px;" /></td>
+						<td><input id="wsR" type="submit" onclick="this.form.submited=this.id;" value="ROVER"
+								style="width: 50px;" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="log" class="logger"></div>
+		<!--
+			CENTER CONTAINER
+		-->
+		<div id="CENTER">
+			<div id="ATTITUDE" class="ATTITUDE ATTITUDE_default"></div>
+			<div id="MOTORS" class="MOTORS MOTORS_default">
+				<canvas id="DRVcanvas" width="300" height="100" style="border: 1px solid #000000;">Message pour les
+					navigateurs ne supportant pas encore canvas.</canvas>
+				<canvas id="MOTcanvas" width="300" height="100" style="border: 1px solid #000000;">Message pour les
+					navigateurs ne supportant pas encore canvas.</canvas>
+			</div>
+			<div id="MAP" class="MAP MAP_default">
+				<canvas id="MAPcanvas" width="300" height="256" style="border: 1px solid #000000;">Message pour les
+					navigateurs ne supportant pas encore canvas.</canvas>
+			</div>
+		</div>
+
+		<!------	UMI PILOT	---------------------------------->
+		<div class="mv2_pilotJSContainer" style="z-index: 100;">
+			<div class="examplediv"></div>
+			<div id="mv2_pilotVreticle"></div>
+			<div id="mv2_pilotHreticle"></div>
+			<div id="mv2_pilotJS" class="mv2_pilotJS">
+				<div id="mv2_pilotCursor"></div>
+			</div>
+			<div id="mv2_pilotJSBackground" class="mv2_pilotJS" style="pointer-events: none;"></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		window.onload = Start;//Start();
+	</script>
+</body>
+
+</html>

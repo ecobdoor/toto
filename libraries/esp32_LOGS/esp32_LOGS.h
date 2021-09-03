@@ -1,18 +1,21 @@
 /** @file */
-#ifndef __esp32_LOGS__
-#define __esp32_LOGS__
+#pragma once
 #include "esp32_DEBUG.h"
 #include "esp32_UDP_log.h"
 #include <esp32_TASKS.h>
 using namespace std;
 typedef s_logITM *pudpx; /** < @todo !!! pour aller avec classe public pdatagram avec aussi pwsx vers les fifos de régulation de 000_DATAG.h vs flow (datagramme) */
 ///////////////////////////////////////////////////////////////////////
-bool _CSV_(const char *FORMAT, ...);
-void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
+class c_myLOGS: public Core {
+public:
+	c_myLOGS();
+	void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
+	bool _UDP_(char *BUFFER);
+};
+//bool _UDP_(char *BUFFER);
 //bool sendUDP(const uint32_t CALLS, const char * FORMAT, va_list * ARGS,	const char * PREFIX = nullptr);
 ///////////////////////////////////////////////////////////////////////
 #define DEBUG_FATAL_ERR true
-#define LVL_DBG__ERR
 //=====================================================================
 /**
  *
@@ -22,34 +25,22 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
  *
  */
 #define LVL_TSK_WSX_CHANGE					4 // task RCV & SND
-#define LVL_TSK_WSX_DATA						5
 #define _MAX_DBG_APP_BOOT					-1
 #define _MAX_DBG_APP_LOOP									8
 #define _MAX_DBG_APP_KMDS					4
+#define _MAX_DBG_DRV_XIMU						-1
 #define _MAX_DBG_TSK_ROOT					4
 #define _MAX_DBG_MOD_WHAT			2 // All modules
 #define _MAX_DBG_MOD_FLOW 										9
-#define _MAX_DBG_DRV_XIMU 										9
 #define _MAX_DBG_DRV_KINE 										9
 #define _MAX_DBG_DRV_PUSH					4//					6 //
-#define _MAX_DBG_DRV_FIFO 										9
+#define _MAX_DBG_DRV_FIFO 										9 // IMU fifo in out
 #define _MAX_DBG_MOT_PIDX					4					
-//#####################################################################
-#ifdef LVL_TSK_WSX_DATA
-#define _SERIAL_WSXDATA(DIRSTR,DATA) \
-	do { \
-		extern int8_t & this_DebugLVL; \
-		serial_WSXDATA(DIRSTR,DATA,this_DebugLVL); \
-	}while(0)
-#else
-#define _SERIAL_WSXDATA(...)
-#endif
 //==============================================================
 #ifdef LVL_TSK_WSX_CHANGE
-#define _SERIAL_WSXCHANGE(DIR,PWSX,CALL) \
+#define _SERIAL_WSXCHANGE(TITLE,DIR,PWSX,CALL,DATA,LEN) \
 	do { \
-		extern int8_t & this_DebugLVL; \
-		serial_WSXCHANGE( DIR,  PWSX, CALL,this_DebugLVL); \
+		serial_WSXCHANGE(TITLE, DIR,  PWSX, CALL,DATA,LEN); \
 	}while(0)
 #else
 #define _SERIAL_WSXCHANGE(...)
@@ -58,7 +49,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef LVL_TSK_WSX_DATA
 #define _DBG_WSXDATA(format,...) \
 	do { \
-	_LOG_(LVL_TSK_WSX_DATA,this_DebugLVL,format,## __VA_ARGS__); \
+	myLOGS._LOG_(LVL_TSK_WSX_DATA,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_WSXDATA(...)
@@ -69,7 +60,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_TSK_ROOT
 #define _DBG_TSK_ROOT(format,...) \
 	do { \
-	_LOG_(_MAX_DBG_TSK_ROOT,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_TSK_ROOT,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_TSK_ROOT(...)
@@ -79,7 +70,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_APP_BOOT
 #define _DBG_APP_BOOT(format,...) \
 	do { \
-	_LOG_(_MAX_DBG_APP_BOOT,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_APP_BOOT,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_APP_BOOT(...)
@@ -88,7 +79,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_APP_LOOP
 #define _DBG_APP_LOOP(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_APP_LOOP,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_APP_LOOP,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_APP_LOOP(...)
@@ -97,7 +88,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_APP_KMDS
 #define _DBG_APP_KMDS(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_APP_KMDS,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_APP_KMDS,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_APP_KMDS(...)
@@ -107,7 +98,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_MOD_WHAT
 #define _DBG_MOD_WHAT(format,...) \
 	do { \
-	_LOG_(_MAX_DBG_MOD_WHAT,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_MOD_WHAT,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_MOD_WHAT(...)
@@ -116,7 +107,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_MOD_FLOW
 #define _DBG_MOD_FLOW(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_MOD_FLOW,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_MOD_FLOW,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_MOD_FLOW(...)
@@ -126,7 +117,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_DRV_XIMU
 #define _DBG_DRV_XIMU(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_DRV_XIMU,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(CTX.SOFTctx.MAX_DBG_DRV_XIMU,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_DRV_XIMU(...)
@@ -135,7 +126,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_DRV_KINE
 #define _DBG_DRV_KINE_(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_DRV_KINE,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_DRV_KINE,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_DRV_KINE_(...)
@@ -144,7 +135,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_DRV_PUSH
 #define _DBG_DRV_PUSH(format,...) \
 	do { \
-	_LOG_(_MAX_DBG_DRV_PUSH,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_DRV_PUSH,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_DRV_PUSH(...)
@@ -153,7 +144,7 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_DRV_FIFO
 #define _DBG_DRV_FIFO(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_DRV_FIFO,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_DRV_FIFO,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_DRV_FIFO(...)
@@ -163,32 +154,12 @@ void _LOG_(const int8_t LVL, const int8_t THIS_DBGMAX, const char *FORMAT, ...);
 #ifdef _MAX_DBG_MOT_PIDX
 #define _DBG_MOT_PIDX(format,...) \
 	do { \
-		_LOG_(_MAX_DBG_MOT_PIDX,this_DebugLVL,format,## __VA_ARGS__); \
+		myLOGS._LOG_(_MAX_DBG_MOT_PIDX,this_DebugLVL,format,## __VA_ARGS__); \
 	}while(0)
 #else
 #define _DBG_MOT_PIDX(...)
 #endif 
-//=====================================================================
-//
-//#####################################################################
-//
-#ifdef LVL_DBG__ERR
-#define _DEBUG_ERR(format,...) \
-	do { \
-		Serial.printf(format,## __VA_ARGS__); \
-		if (DEBUG_FATAL_ERR){ \
-			c_linkISR::detach_ISR(); \
-			Serial.printf("\n%s",dump_TASKS().c_str()); \
-			Serial.printf("\n##############################################"); \
-			char x=inKey("\nFATAL ERROR. Wait for hit key (Space=continue, Enter=restart)..."); \
-			Serial.printf("\n############################################## '%c' %i",x,x); \
-			if(x=='\n') \
-				ESP.restart(); \
-			/*vTaskSuspendAll();*/ \
-			while (true) { NOP(); } \
-		} \
-	}while(0)
-#else
-#define _DEBUG_ERR(...)
-#endif //==============================================================
-#endif //__000_LOG__
+///////////////////////////////////////////////////////////////////////
+extern c_myLOGS myLOGS;
+///
+//#endif //__esp32_LOGS__

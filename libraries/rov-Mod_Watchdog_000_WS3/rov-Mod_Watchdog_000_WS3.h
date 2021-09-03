@@ -16,10 +16,13 @@ private:
 	t_map_OPwatchdog map_OPwatchdog; // Mapping of available module's operations
 public:
 	friend class Motors;
-	Watchdog(Flow *FLOW, const s_WATCHDOG MOD_CFG, s_WATctx *CONTEXT, int8_t *DBGMAX);
-	bool auto_MSG(const uint64_t DTMS);
-	bool complete_MSG(JsonObject &KMD);
+	Watchdog(c_myFlow *FLOW, const s_WATCHDOG MOD_CFG, s_WATctx *CONTEXT, int8_t *DBGMAX);
+	e_hasMsg auto_MSG(const uint64_t DTMS,JsonObject &KMD);
+	e_hasMsg complete_MSG(JsonObject &KMD);
 	bool reply2pilotQ_OP(JsonObject &JOBJ);
+	bool updateATreply(JsonObject &JOBJ){
+		return false;
+	}
 };
 ///////////////////////////////////////////////////////////////////////
 #endif

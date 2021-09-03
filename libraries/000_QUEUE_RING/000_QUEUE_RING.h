@@ -37,7 +37,7 @@ void addMSG(ITM &item, const char *MSG){
 
  //-----------------------------------------------------------------------
  */
-/*###################################################################
+/*
 
  A chaque appel d'une fonction de "myIterator" _DBGRQ_ provoque un sprintf
  des variables suivies dans le membre char MSG[...] du template <class T>.
@@ -48,8 +48,7 @@ void addMSG(ITM &item, const char *MSG){
  DEBUG_RQLVL 1
  DEBUG_RQLVL 2	Begin End Start Stop
 
-
- ###################################################################*/
+*/
 //#define DEBUG_RQLVL 
 #ifdef DEBUG_RQLVL
 	#define _DBGRQ_(LVL,CHN,format,...) \

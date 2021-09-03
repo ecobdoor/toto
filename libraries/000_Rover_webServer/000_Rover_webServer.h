@@ -1,6 +1,5 @@
-#ifndef __000_ROVER_WEBSERVER__
-#define __000_ROVER_WEBSERVER__
 /** @file */
+#pragma once
 #include <AsyncWebSocket.h>
 typedef struct {
 	size_t content_len;
@@ -10,4 +9,4 @@ typedef struct {
 	String MSG;
 } s_uploadControl;
 bool webInit(AsyncWebServer &server, AsyncWebSocket &webSokSrv, AwsEventHandler onWSMessage);
-#endif //__000_ROVER_WEBSERVER__
+///////////////////////////////////////////////////////////////////////

@@ -1,4 +1,5 @@
 #include "esp32_LOGS.h"
+#include "esp32_SPRINT.h"
 #include "esp32_FSTR.h"
 #include "rov-Hard_MOT_000_WS3.h"
 //#include "00_MODhardware.h"
@@ -60,18 +61,48 @@ t_AfloatAxes H_speedSensorMotors::Get(H_pidMotors &PIDS){
 H_pwmMotors::H_pwmMotors(asmPWMs *PWM, const s_pwm leftCFG, const s_pwm rightCFG,
 	const String NAME, int8_t *DBGMAX, const bool ON) :
 	H_Module(NAME.c_str(), DBGMAX, ON), //constructeur classe mère
-	data(*PWM){
+	data(*PWM)
+{
 	data._pwm[0] = leftCFG;
 //	data._pwm[0]._dutyMax=((1<<DEF_PWM_RESOLUTION)-1)/DEF_PWM_VALUEMAX;
 	data._pwm[1] = rightCFG;
 //	data._pwm[1]._dutyMax=((1<<DEF_PWM_RESOLUTION)-1)/DEF_PWM_VALUEMAX;
 // Setup timer and attach timer to a PWM output pin
+	attachPWMpins();
+}
+//---------------------------------------------------------------------
+/**
+ * @fn void H_pwmMotors::attachPWMpins()
+ * @brief Attaches PWM pins to associated timers
+ *
+ * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html
+ */
+void H_pwmMotors::attachPWMpins(){
+// Setups & attaches timers to PWM output pins
 #ifdef DEF_WITHMOTORSPINS
 	for (int i = 0; i < DEF_MOTORS_NBAXIS; i++) {
 		s_pwm & pwm = data._pwm[i];
 		ledcSetup(pwm._channel, pwm._frequence, pwm._resolution);
 		ledcAttachPin(pwm._pinPWM, pwm._channel);
 		pinMode(pwm._pinSENS, OUTPUT);
+	}
+#endif
+}
+//---------------------------------------------------------------------
+/**
+ * @fn void H_pwmMotors::detachPWMpins()
+ * @brief Detaches PWM pins from associated timers
+ *
+ * https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/ledc.html
+ */
+void H_pwmMotors::detachPWMpins(){
+// Resets & detaches timers of PWM output pins
+#ifdef DEF_WITHMOTORSPINS
+	for (int i = 0; i < DEF_MOTORS_NBAXIS; i++) {
+		s_pwm & pwm = data._pwm[i];
+		ledcDetachPin(pwm._pinPWM);
+		//ledcSetup(pwm._channel, pwm._frequence, pwm._resolution);
+		digitalWrite(pwm._pinPWM, LOW);
 	}
 #endif
 }
@@ -97,18 +128,20 @@ void H_pwmMotors::analogWrite(const t_Aint32Axes VALUES){
 	}
 }
 //---------------------------------------------------------------------
-#ifdef DEF_WITHMOTORSPINS
 t_Aint32Axes H_pwmMotors::analogRead() {
 	array < int32_t, DEF_MOTORS_NBAXIS > values;
 	for (int i = 0; i < DEF_MOTORS_NBAXIS; i++) {
 		s_pwm & pwm = data._pwm[i];
+#ifdef DEF_WITHMOTORSPINS
 		values[i] = ledcRead(pwm._channel) / pwm._dutyMax;
 		if (0 < digitalRead(pwm._pinSENS))
 			values[i] = -values[i];
+#else
+		values[i] = pwm._valueCur;
+#endif
 	}
 	return values;
 }
-#endif
 //---------------------------------------------------------------------
 /**
  * @fn
@@ -132,7 +165,7 @@ t_Aint32Axes H_pwmMotors::Set(const t_AfloatAxes &COMMAND){
 }
 //---------------------------------------------------------------------
 t_Aint32Axes H_pwmMotors::Get_valueCur(){
-	array < int32_t, DEF_MOTORS_NBAXIS > values;
+	array<int32_t, DEF_MOTORS_NBAXIS> values;
 	for (size_t ax = 0; ax < DEF_MOTORS_NBAXIS; ax++) {
 		s_pwm &pwm = data._pwm[ax];
 		values[ax] = pwm._valueCur;
@@ -140,7 +173,7 @@ t_Aint32Axes H_pwmMotors::Get_valueCur(){
 	return values;
 }
 //---------------------------------------------------------------------
-/*t_Aint32Axes*/void H_pwmMotors::Reset(){
+void H_pwmMotors::Reset(){
 	t_Aint32Axes values = { 0, 0 };
 	analogWrite(values);
 //	return values;
@@ -205,7 +238,7 @@ void H_pidMotors::Reset(){
  * @param ERROR for PID regulation errors
  * @return PID regulation  setpoints
  */
-t_AfloatAxes H_pidMotors::Run(const t_AfloatAxes &ERROR,const uint64_t MICROTS){
+t_AfloatAxes H_pidMotors::Run(const t_AfloatAxes &ERROR, const uint64_t MICROTS){
 	t_AfloatAxes propo;
 	t_AfloatAxes integ;
 	t_AfloatAxes deriv;
@@ -234,15 +267,7 @@ t_AfloatAxes H_pidMotors::Run(const t_AfloatAxes &ERROR,const uint64_t MICROTS){
 		pid._RQ->enqueue(item);
 	}
 	if (myUDP.isOpen()) {
-		_DBG_MOT_PIDX(
-			"\n              Coeff| %+9.3f %+9.3f | %+9.3f %+9.3f | %+9.3f %+9.3f | \n              Depth|     %i         %i     |     %i         %i     |     %i         %i     |%s",
-			data._pid[0]._kp, data._pid[1]._kp,
-			data._pid[0]._ki, data._pid[1]._ki,
-			data._pid[0]._kd, data._pid[1]._kd,
-			data._pid[0]._dp, data._pid[1]._dp,
-			data._pid[0]._di, data._pid[1]._di,
-			data._pid[0]._dd, data._pid[1]._dd,
-			dump_PID().c_str());
+		_DBG_MOT_PIDX("%s", dump_RQ().c_str());
 		/*
 		 _DBG_MOT_PIDX("\n%s",
 		 S_flow(milli_TS(), 0, '*', propo[0], propo[1], integ[0], integ[1], deriv[0],
@@ -359,7 +384,7 @@ void H_pidMotors::derived(pidQueueData &x, ringQueue<pidQueueData> &RQ,
 		int _count = 0;
 		uint64_t _savTms;
 		float _savErr;
-		float _slope = 0;
+		float _slope = 0.0;
 		public:
 		Derivator(pidQueueData &x){ //constructeur
 			_savTms = x.micTSrq;
@@ -380,9 +405,10 @@ void H_pidMotors::derived(pidQueueData &x, ringQueue<pidQueueData> &RQ,
 			return _count;
 		}
 	};
-	Derivator derivee(x); //instanciation
+	/// PROBLEME SI GAIN NUL ET COUNT=1 !!!!!!!!!??????????????????????????????
+	Derivator derivee(x); //Instantiation
 	derivee = for_each(RQ.begin(), RQ.stop(DEPTH), derivee);
-	x.DER = derivee.count() > 0 ? (derivee.slope() / derivee.count()) : 0;
+	x.DER = derivee.count() > 0 ? (derivee.slope() / derivee.count()) : 0.0;
 }
 /*
  float H_pidMotors::integrated(s_pid & PID, pidQueueData & x) {
@@ -477,12 +503,24 @@ void H_pidMotors::dumpRQ(ringQueue<pidQueueData> &RQ){
 		"\n *******************************************************************");
 }
 //---------------------------------------------------------------------
-String H_pidMotors::dump_PID(){
+String H_pidMotors::dump_RQ(){
 	char buffer[1524];
 	buffer[0] = 0;
 	int16_t cnt = 0;
 	s_pid pid_L = data._pid[0];
 	s_pid pid_R = data._pid[1];
+	if (1 < _xpidCTX.udpLvl_PIDrq) {
+		SPrintF(sizeof(buffer), cnt, buffer,
+			"\n              Coeff| %+9.3f %+9.3f | %+9.3f %+9.3f | %+9.3f %+9.3f |",
+			data._pid[0]._kp, data._pid[1]._kp,
+			data._pid[0]._ki, data._pid[1]._ki,
+			data._pid[0]._kd, data._pid[1]._kd);
+		SPrintF(sizeof(buffer), cnt, buffer,
+			"\n              Depth|     %i         %i     |     %i         %i     |     %i         %i     |",
+			data._pid[0]._dp, data._pid[1]._dp,
+			data._pid[0]._di, data._pid[1]._di,
+			data._pid[0]._dd, data._pid[1]._dd);
+	}
 	ringQueue<pidQueueData> &RQ_L = *pid_L._RQ;
 	ringQueue<pidQueueData> &RQ_R = *pid_R._RQ;
 	int debut_L = RQ_L.debut;
@@ -491,14 +529,19 @@ String H_pidMotors::dump_PID(){
 	int fin_R = RQ_R.fin;
 	int cnt_L = RQ_L.cnt();
 	int cnt_R = RQ_R.cnt();
-	if (1 < _xpidCTX.dmpLvl_Ringqueue)
+	if (5 < _xpidCTX.udpLvl_PIDrq)
 		SPrintF(sizeof(buffer), cnt, buffer,
 			"\n *** RQ(cnt,debut,fin) = RQ_L(%i,%i,%i) | RQ_R(%i,%i,%i) *******",
 			cnt_L, debut_L, fin_L, cnt_R, debut_R, fin_R);
-	if (0 < _xpidCTX.dmpLvl_Ringqueue) {
+	if (0 < _xpidCTX.udpLvl_PIDrq) {
 		SPrintF(sizeof(buffer), cnt, buffer, Lang.CST(PID_HEAD));
 		int i = debut_L;
-		for (int zz = 0; zz <= DEF_MOTORS_RQSIZE; zz++) {
+		int zend;
+		if (1 < _xpidCTX.udpLvl_PIDrq)
+			zend = DEF_MOTORS_RQSIZE;
+		else
+			zend = DEF_MOTORS_RQSIZE / 2;
+		for (int zz = 0; zz <= zend; zz++) {
 //		RQ_L.clrX(i); //effacer le message
 //		RQ_R.clrX(i); //effacer le message
 			SPrintF(sizeof(buffer), cnt, buffer, "\n%s",
@@ -510,12 +553,8 @@ String H_pidMotors::dump_PID(){
 					RQ_L.getX(i).outCMD, RQ_R.getX(i).outCMD, RQ_R.getX(i).MSG).c_str());
 			i = (i + 1) % (DEF_MOTORS_RQSIZE + 1);
 		}
-		SPrintF(sizeof(buffer), cnt, buffer, Lang.CST(PID_FOOT));
+		//SPrintF(sizeof(buffer), cnt, buffer, Lang.CST(PID_FOOT));
 	}
-	if (1 < _xpidCTX.dmpLvl_Ringqueue)
-		SPrintF(sizeof(buffer), cnt, buffer, "\n%s",
-			S_flow(milli_TS(), 0, '*',
-				pid_L._kp, pid_R._kp, pid_L._ki, pid_R._ki, pid_L._kd, pid_R._kd, 0, 0, ".....").c_str());
 	return String(buffer);
 }
 //---------------------------------------------------------------------
@@ -585,7 +624,7 @@ String S_flow(const uint64_t TMS, const uint8_t IDX, const char CAR, const float
 	int16_t cnt = 0;
 	SPrintF(sizeof(buffer), cnt, buffer,
 		"%14.6f %i %c | %+9.3f,%+9.3f | %+9.3f,%+9.3f | %+9.3f,%+9.3f | %+9.3f,%+9.3f | '%s'",
-		TMS/1000000.0, IDX, CAR, L_ERR, R_ERR, L_INT, R_INT, L_DER, R_DER, L_OUT, R_OUT, MSG);
+		TMS / 1000000.0, IDX, CAR, L_ERR, R_ERR, L_INT, R_INT, L_DER, R_DER, L_OUT, R_OUT, MSG);
 	return String(buffer);
 }
 //---------------------------------------------------------------------
